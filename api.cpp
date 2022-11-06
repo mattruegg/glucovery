@@ -8,11 +8,8 @@ using namespace std;
 
 int main()
 {
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
-
-    for (const string& word : msg)
+    for (int i = 0; i < 5; i++)
     {
-        cout << word << " ";
+        cout << i;
     }
-    cout << endl;
 }
