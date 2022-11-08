@@ -3,19 +3,7 @@ import time
 import requests
 import json
 
-if __name__ == '__main__':
-
-    start = time.time()
-
-    # cnf_code = input("Enter food code (CNF): ")
-    # cnf_url = 'https://food-nutrition.canada.ca/api/canadian-nutrient-file/'
-
-    # response = requests.get(cnf_url + 'food/?id=' + cnf_code)
-    # data = response.text
-    # parse_json = json.loads(data)
-    # info = parse_json[0]
-    # print(info['food_description'])
-
+def fdc_api():
     fdc_api_key = '?api_key=6zUVC6zgPINNy4SKljsSNKnVjwedmzcMRMh7iLkr'
     fdc_url = 'https://api.nal.usda.gov/fdc/v1/'
 
@@ -27,6 +15,24 @@ if __name__ == '__main__':
     info2 = parse_json2['foodNutrients']
     info3 = info2[0]
     print(info3)
+
+def cnf_api():
+    # cnf_code = input("Enter food code (CNF): ")
+    cnf_url = 'https://food-nutrition.canada.ca/api/canadian-nutrient-file/'
+
+    response = requests.get(cnf_url + 'nutrientamount/?id=1701')
+    data = response.text
+    parse_json = json.loads(data)
+    info = parse_json
+    for i in info:
+        if i['nutrient_value'] > 0:
+            print(i)
+
+
+if __name__ == '__main__':
+
+    start = time.time()
+    cnf_api()
 
     end = time.time()
     print("time", end - start)
