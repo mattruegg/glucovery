@@ -17,16 +17,14 @@ def fdc_api():
     print(info3)
 
 def cnf_api():
-    # cnf_code = input("Enter food code (CNF): ")
     cnf_url = 'https://food-nutrition.canada.ca/api/canadian-nutrient-file/'
-
     response = requests.get(cnf_url + 'nutrientamount/?id=1701')
     data = response.text
     parse_json = json.loads(data)
     info = parse_json
     for i in info:
-        if i['nutrient_value'] > 0:
-            print(i)
+        if i['nutrient_value'] > 0.11:
+            print("Nutrient Value:", i['nutrient_value'], "\tNutrient Name:", i['nutrient_web_name'])
 
 
 if __name__ == '__main__':
@@ -35,4 +33,4 @@ if __name__ == '__main__':
     cnf_api()
 
     end = time.time()
-    print("time", end - start)
+    # print("time", end - start)
