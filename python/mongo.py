@@ -5,7 +5,7 @@ import os
 
 
 
-client = pymongo.MongoClient("mongodb+srv://ckalia:Bbckkalia11@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://ckalia:ymckglucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority")
 db = client["glucovery-db"]
 collection = db["glucovery-cluster"]
 requesting = []
