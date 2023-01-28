@@ -2,7 +2,7 @@ import pymongo
 import json
 from pymongo import MongoClient, InsertOne
 import os
-from .upload_mongo import res_dict
+from .upload_gluten_free_foods.upload_mongo import res_dict
 
 connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
 client = pymongo.MongoClient(connection_string)
