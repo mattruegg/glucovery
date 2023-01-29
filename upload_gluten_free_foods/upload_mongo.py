@@ -9,7 +9,7 @@ import os
 # username: ckalia
 # password: ymck-glucovery
 
-food_code = <<FOOD CODE>> 
+food_code = <<FOOD CODE>>
 food_name = "<<SET FOOD NAME>>"
 food_weight = <<SET FOOD WEIGHT OF A SINGLE UNIT IN GRAMS>>
 filename = "<<SET FILENAME>>"
