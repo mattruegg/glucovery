@@ -6,7 +6,7 @@
 - Don't run the code more than once, it will add a duplicate record
 ## How to Upload CNF Excel Files to MongoDB
 - Login to MongoDB and add your system's IP address:
-    - Use the username `ckalia` and the password `ymck-glucovery` to login to MongoDB
+    - Use the email `ckalia@uwaterloo.ca` and the password `ymck-glucovery` to login to MongoDB
     - Visit this URL: `https://cloud.mongodb.com/v2/63cef72751e1dd59e282be0d#/security/network/accessList`
     - Add your IP address
 - Download the CNF excel file for the desired food
