@@ -11,7 +11,7 @@ collection.count_documents({})
 
 # set queries
 food_name_query = "test"
-# nutrient_name = "Moisture"
+nutrients = ["Moisture", "Ash"]
 
 # return food from food name 
 # TODO - fuzzy search and synonyms, sort results based on score and set limit
@@ -29,21 +29,30 @@ res = collection.find(filter = {"food_name": food_name_query}, projection = fiel
 #     }
 
 nutrient_query = {
-    "$or": 
     # insert multiple nutrients that the user is defficient in
-    [
-        {
-            "nutrients": {"$elemMatch" : {"Nutrient name": "Moisture"}}
-        },
-        {
-            "nutrients": {"$elemMatch" : {"Nutrient name": "Ash"}}
-        }
-    ]
+            "nutrients": {"$elemMatch" : {"Nutrient name": {"$in": ["Moisture", "Ash"]}}}
     }
 
 # specifies what fields to return
-projection = {"nutrients": {"$elemMatch" : {"Nutrient name": nutrient_name}}, "_id": False}
+# projection = {
+#     "nutrients": 
+#     {
+#         "$elemMatch": 
+#         {
+#             "$and":
+#             [
+#                 {
+#                     "Nutrient name": nutrient_name_one
+#                 },
+#                 {
+#                     "Nutrient name": nutrient_name_two
+#                 },
+#             ]
+#         }
+#     }, 
+#     "_id": False
+# }
 
-res = collection.find(filter = nutrient_query, projection = projection)
+res = collection.find(filter = nutrient_query, projection = nutrient_query)
 for obj in res:
     print(obj)
