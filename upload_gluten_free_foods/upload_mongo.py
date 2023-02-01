@@ -9,10 +9,10 @@ import os
 # username: ckalia
 # password: ymck-glucovery
 
-food_code = <<FOOD CODE>>
-food_name = "<<SET FOOD NAME>>"
-food_weight = <<SET FOOD WEIGHT OF A SINGLE UNIT IN GRAMS>>
-filename = "<<SET FILENAME>>"
+food_code = 5
+food_name = "Apple"
+food_weight = 300
+filename = "nutrient_profile.xls"
 
 file_path = os.path.join("data", filename)
 
@@ -40,10 +40,10 @@ n = 3
 df.drop(columns=df.columns[-3:], axis=1, inplace=True)
 
 # rename last column (too long)
-df.rename(columns={'Value per 100 g of edible portion': 'Value 100g'}, inplace=True)
+df.rename(columns={'Value per 100 g of edible portion': 'value_100g', "Nutrient name": "nutrient_name", "Unit": "unit"}, inplace=True)
 
 # remove rows with nutritional value of zero
-df = df[df["Value 100g"] != 0]
+df = df[df["value_100g"] != 0]
 
 # remove rows that contain nutrients that aren't of interest to us
 # nutrient_order = {"Iron, Fe": 1, "Folic acid, synthetic form": 2, "Vitamin B-6": 3, "Vitamin B-12": 4, "Vitamin D": 5}
@@ -56,8 +56,14 @@ df = df[df["Value 100g"] != 0]
 json_str = df.to_json(orient = "records")
 lst = json.loads(json_str)
 
+sample_list = [
+        {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
+        # {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
+]
+
+
 # missing nutrient code unfortunately
-res_dict = {"food_code": food_code, "food_name": food_name, "food_weight": food_weight, "nutrients": lst}
+res_dict = {"food_code": food_code, "food_name": food_name, "food_weight": food_weight, "nutrients": sample_list}
 
 # push a single json document to mongodb
 connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
