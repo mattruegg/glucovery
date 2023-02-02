@@ -13,25 +13,52 @@ collection.count_documents({})
 food_name_query = "Apple"
 nutrients = ["Ash", "Moisture"]
 
+##### First CASE
+
 # return food from food name 
 # TODO - fuzzy search and synonyms, sort results based on score and set limit
 # fields returned
-# fields_returned = ["nutrients"]
+fields_returned = ["nutrients"]
 # res = collection.find(filter = {"food_name": food_name_query}, projection = fields_returned)
-# for obj in res:
-#     print(obj)
 
+# define pipeline
+# autocomplete - for each space seperated term, matches any substring with 1 character variation
+# text - would not allow for substring matches
+
+index = "default1"
+food_query = "ag"
+limit = 20
+pipeline = [
+    {
+        "$search": 
+            {
+                "index": index,
+                "autocomplete": {"query": food_query, "path": "food_name", "fuzzy": {"maxEdits": 1}}
+            }
+    },
+    {"$limit": limit},
+    {
+        "$project": {
+        "_id": 0, "food_weight": 1, "nutrients": 1,
+        # "score": { "$meta": "searchScore" }
+        }
+    },
+]
+# run pipeline
+result = collection.aggregate(pipeline)
+# print results
+res = []
+for i in result:
+    res.append(i)
+print(res)
+
+
+##### Second CASE
 
 nutrient_query = {
     # insert multiple nutrients that the user is defficient in
             "nutrients": {"$elemMatch" : {"nutrient_name": {"$in": nutrients}}}
     }
-
-# projection = {
-#     # insert multiple nutrients that the user is defficient in
-#             "nutrients": {"$elemMatch" : {"Nutrient name": {"$in": nutrients}}},
-#             "_id": 0
-#     }
 
 # aggregation stuff
 
@@ -50,9 +77,11 @@ pipeline = [
         {"$group": group_query},
         { "$project": {"_id" : 0, "food_code": 0, "food_weight": 0}}
     ]
-q = collection.aggregate(pipeline)
-for obj in q:
-    print(obj)
+# q = collection.aggregate(pipeline)
+# res = []
+# for obj in q:
+#     res.append(obj)
+# print(res)
 
 
 

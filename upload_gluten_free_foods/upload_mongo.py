@@ -10,8 +10,8 @@ import os
 # password: ymck-glucovery
 
 food_code = 5
-food_name = "Apple"
-food_weight = 300
+food_name = "Appor"
+food_weight = 100
 filename = "nutrient_profile.xls"
 
 file_path = os.path.join("data", filename)
@@ -58,7 +58,7 @@ lst = json.loads(json_str)
 
 sample_list = [
         {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
-        # {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
+        {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
 ]
 
 
