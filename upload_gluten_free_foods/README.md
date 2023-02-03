@@ -10,10 +10,13 @@
     - Visit this URL: `https://cloud.mongodb.com/v2/63cef72751e1dd59e282be0d#/security/network/accessList`
     - Add your IP address
 - Download the CNF excel file for the desired food
-- In the `upload_mongo.py` file in the `upload_gluten_free_foods` directory, replace the `<<>>` with a value for the following variables:
+- In the `upload_mongo.py` file in the `upload_gluten_free_foods` directory, replace the `<<>>` with a value for the following  `7` variables:
 
     - `food_code` ex. 4
     - `food_name` ex. "apple"
     - `food_weight` ex. 250
+    - `is_vegetarian` ex. False
+    - `is_vegan` ex. False
+    - `is_liquid` ex. False
     - `filename` ex. "file.xls"
 - Run the `upload_mongo.py` python file to upload the data

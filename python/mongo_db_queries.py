@@ -1,4 +1,5 @@
 import pymongo
+import time
 
 connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
 client = pymongo.MongoClient(connection_string)
@@ -11,7 +12,8 @@ collection.count_documents({})
 
 # set queries
 food_name_query = "Apple"
-nutrients = ["Ash", "Moisture"]
+# nutrients = ["Ash", "Moisture"]
+nutrients = ["Protein", "Carbohydrate"]
 
 ##### First CASE
 
@@ -26,7 +28,7 @@ fields_returned = ["nutrients"]
 # text - would not allow for substring matches
 
 index = "default1"
-food_query = "ag"
+food_query = "apple"
 limit = 20
 pipeline = [
     {
@@ -45,12 +47,16 @@ pipeline = [
     },
 ]
 # run pipeline
+start_time = time.time()
 result = collection.aggregate(pipeline)
-# print results
-res = []
-for i in result:
-    res.append(i)
-print(res)
+# print("--- %s seconds ---" % (time.time() - start_time))
+# explain_output = db.command('aggregate', 'glucovery-collection', pipeline=pipeline, explain=True)
+# print(explain_output.keys())
+# # print results
+# res = []
+# for i in result:
+#     res.append(i)
+# print(res)
 
 
 ##### Second CASE
@@ -70,16 +76,24 @@ group_query = {
     }
 }
 
+# person specific
+is_vegan = False
+is_vegetarian = False
+
 pipeline = [
-        {"$match": nutrient_query},
+        {"$match": {"$and": [nutrient_query, {"is_vegan": is_vegan}, {"is_vegetarian": is_vegetarian}]}},
         {"$unwind": "$nutrients"},
         {"$match": {"nutrients.nutrient_name": {"$in": nutrients}}},
         {"$group": group_query},
         { "$project": {"_id" : 0, "food_code": 0, "food_weight": 0}}
     ]
-# q = collection.aggregate(pipeline)
+
+start_time = time.time()
+q = collection.aggregate(pipeline)
+print("--- %s seconds ---" % (time.time() - start_time))
 # res = []
-# for obj in q:
+for obj in q:
+    print(obj)
 #     res.append(obj)
 # print(res)
 
