@@ -4,23 +4,21 @@ import pymongo
 from pymongo import MongoClient, InsertOne
 import os
 
-# Add your ip address here: https://cloud.mongodb.com/v2/63cef72751e1dd59e282be0d#/security/network/accessList
-# MongoDB Login:
-# username: ckalia
-# password: ymck-glucovery
-
-food_code = 5
-food_name = "Appor"
-food_weight = 100
+## CHANGE THESE VALUES
+food_code = 49
+food_name = "chetan food also"
+# no need to convert to grams i.e.leave it in the units found in CNF
+food_weight = 250
+is_vegetarian = False
+is_vegan = False
+is_liquid = False
 filename = "nutrient_profile.xls"
 
 file_path = os.path.join("data", filename)
 
 # TODO
-# remove nutrients that are not needed
 # remove duplicate transactions
 # be able to add liquids, is_liquid bool field
-
 
 # read in excel file
 n = 4
@@ -35,20 +33,23 @@ df.drop(df.tail(n).index,
 sub_titles = ["Proximates", "Other Carbohydrates", "Minerals", "Vitamins", "Amino Acids", "Lipids", "Other components"]
 df = df[~df['Nutrient name'].isin(sub_titles)]
 
-# remove unncessary columns
+# remove unncessary columns (only applies for excel file for '100g edible portion' serving)
 n = 3
 df.drop(columns=df.columns[-3:], axis=1, inplace=True)
 
-# rename last column (too long)
+# rename columns to remove space-sperated terms
 df.rename(columns={'Value per 100 g of edible portion': 'value_100g', "Nutrient name": "nutrient_name", "Unit": "unit"}, inplace=True)
 
 # remove rows with nutritional value of zero
-df = df[df["value_100g"] != 0]
+# df = df[df["value_100g"] != 0]
 
-# remove rows that contain nutrients that aren't of interest to us
-# nutrient_order = {"Iron, Fe": 1, "Folic acid, synthetic form": 2, "Vitamin B-6": 3, "Vitamin B-12": 4, "Vitamin D": 5}
-# important_nutrients = list(nutrient_order.keys())
-# df = df[df['Nutrient name'].isin(important_nutrients)]
+nutrient_filename = "intake.xlsx"
+nutrient_file_path = os.path.join("data", nutrient_filename)
+df_nutrients = pd.read_excel(nutrient_file_path)
+
+# keep important nutrients
+nutrient_list = list(df_nutrients["Nutrient"])
+df = df[df['nutrient_name'].isin(nutrient_list)]
 
 # should have 3 columns at this point
 
@@ -63,7 +64,15 @@ sample_list = [
 
 
 # missing nutrient code unfortunately
-res_dict = {"food_code": food_code, "food_name": food_name, "food_weight": food_weight, "nutrients": sample_list}
+res_dict = {
+        "food_code": food_code, 
+        "food_name": food_name, 
+        "food_weight": food_weight, 
+        "is_vegetarian": is_vegetarian,
+        "is_vegan": is_vegan,
+        "is_liquid": is_liquid,
+        "nutrients": lst
+}
 
 # push a single json document to mongodb
 connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
