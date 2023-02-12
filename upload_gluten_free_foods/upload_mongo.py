@@ -5,12 +5,11 @@ from pymongo import MongoClient, InsertOne
 import os
 
 ## CHANGE THESE VALUES
-food_code = 49
-food_name = "chetan food also"
-# no need to convert to grams i.e.leave it in the units found in CNF
-food_weight = 250
-is_vegetarian = False
-is_vegan = False
+food_code = 1734
+food_name = "Pineapple"
+food_weight = 905
+is_vegetarian = True
+is_vegan = True
 is_liquid = False
 filename = "nutrient_profile.xls"
 
