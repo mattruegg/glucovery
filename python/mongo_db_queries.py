@@ -47,8 +47,8 @@ pipeline = [
     },
 ]
 # run pipeline
-start_time = time.time()
-result = collection.aggregate(pipeline)
+# start_time = time.time()
+# result = collection.aggregate(pipeline)
 # print("--- %s seconds ---" % (time.time() - start_time))
 # explain_output = db.command('aggregate', 'glucovery-collection', pipeline=pipeline, explain=True)
 # print(explain_output.keys())
@@ -92,8 +92,8 @@ start_time = time.time()
 q = collection.aggregate(pipeline)
 print("--- %s seconds ---" % (time.time() - start_time))
 # res = []
-for obj in q:
-    print(obj)
+# for obj in q:
+#     print(obj)
 #     res.append(obj)
 # print(res)
 
