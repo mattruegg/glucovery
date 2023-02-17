@@ -1,3 +1,5 @@
+# API stuff
+
 import requests
 import os
 import json
@@ -52,3 +54,16 @@ print(len(my_list))
 
 
 
+# Write CNF json data to disk
+# file_path = os.path.join("..", "data", "nutrient_amount.json")
+# res = requests.get(food_breakdown_url, params=context)
+# if res.ok:
+#     with open(file_path, 'wb') as file:
+#         file.write(res.content)
+
+
+# with open(filename, 'rb') as f:
+#     myDict = json.load(f)
+#     for dict in myDict:
+#         requesting.append(InsertOne(dict))
+# result = collection.bulk_write(requesting)

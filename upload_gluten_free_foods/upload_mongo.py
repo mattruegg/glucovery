@@ -6,12 +6,12 @@ import os
 
 ## CHANGE THESE VALUES
 food_code = 49
-food_name = "chetan food also"
+food_name = "frog"
 # no need to convert to grams i.e.leave it in the units found in CNF
-food_weight = 250
-is_vegetarian = False
-is_vegan = False
-is_liquid = False
+food_weight = 100
+# is_vegetarian = False
+# is_vegan = False
+# is_liquid = False
 filename = "nutrient_profile.xls"
 
 file_path = os.path.join("data", filename)
@@ -68,10 +68,10 @@ res_dict = {
         "food_code": food_code, 
         "food_name": food_name, 
         "food_weight": food_weight, 
-        "is_vegetarian": is_vegetarian,
-        "is_vegan": is_vegan,
-        "is_liquid": is_liquid,
-        "nutrients": lst
+        # "is_vegetarian": is_vegetarian,
+        # "is_vegan": is_vegan,
+        # "is_liquid": is_liquid,
+        "nutrients": sample_list
 }
 
 # push a single json document to mongodb
