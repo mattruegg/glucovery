@@ -1,5 +1,9 @@
 import pymongo
 import time
+import os
+import pandas as pd
+
+from reccommended_intake import get_nutrient_intake
 
 # view stuff
 # can let user select age, name, gender, dietary preferences (checkbox), allergies (checkbox)
@@ -10,8 +14,46 @@ db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
 # performs aggregation on nutrient values
-def sum_nutrient_values():
-    pass
+def sum_nutrient_values(foods_list):
+    """
+    returns the sum of each nutrient from different foods
+
+    foods_list: list of foods
+
+    return: dictionary where key is food name and value is it's value summed up from all foods in user diet
+
+    """
+    nutrient_values = {}
+    for food in foods_list:
+        nutrients = food.get("nutrients")
+        for nutrient in nutrients:
+            nutrient_name = nutrient.get("nutrient_name")
+            nutrient_value = nutrient.get("value_100g")
+            nutrient_values[nutrient_name] = nutrient_values.get(nutrient_name, 0) + nutrient_value
+    return nutrient_values
+
+def determine_missing_nutrient_amounts(nutrients_in_diet, recommended_intake):
+    """
+    returns the nutrients that are missing from the user's diet
+
+    nutrients_in_diet: summed-up amounts for each nutrient in the user's diet
+    recommended_intake: recommended intake for each nutrient
+
+    return: 
+
+    """
+
+    for nutrient, intake in recommended_intake.items():
+        # nutrient should always be found in recommended_intake
+        if nutrient in nutrients_in_diet:
+            rec_intake = intake.get("RDA")
+            up_intake = intake.get("UL")
+            user_intake = nutrients_in_diet.get("nutrient")
+            print(rec_intake, up_intake, user_intake)
+            print("----")
+        else:
+            raise Exception("nutrient not found")
+
 
 # note: no sorting on score capability with fuzzy match
 # limit is limit on results outputted
@@ -37,8 +79,7 @@ def find_food(search_query, limit):
                     "autocomplete": {"query": search_query, "path": "food_name", "fuzzy": {"maxEdits": 1}} 
                 }
         },
-        {"$unwind": "$nutrients"},
-        {"$sum", }
+
         {"$limit": limit},
         {
             "$project": {
@@ -47,15 +88,6 @@ def find_food(search_query, limit):
             }
         },
     ]
-
-    #  pipeline = [
-    #         {"$match": {"$and": [nutrient_query, {"is_vegan": is_vegan}, {"is_vegetarian": is_vegetarian}]}},
-    #         {"$unwind": "$nutrients"},
-    #         {"$match": {"nutrients.nutrient_name": {"$in": nutrients}}},
-    #         {"$group": group_query},
-    #         { "$project": {"_id" : 0}}
-    #     ]
-
 
     # start_time = time.time()
     result = collection.aggregate(pipeline)
@@ -70,7 +102,13 @@ def find_food(search_query, limit):
     return res
 
 a = find_food("frot", 1)
-print(a)
+b = sum_nutrient_values(a)
+c = get_nutrient_intake(19)
+d = determine_missing_nutrient_amounts(b, c)
+print(d)
+
+
+# print(a)
 
 
 nutrients = ["Protein", "Carbohydrate"]
@@ -93,6 +131,10 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens):
         # insert multiple nutrients that the user is defficient in
                 "nutrients": {"$elemMatch" : {"nutrient_name": {"$in": nutrients}}}
         }
+
+    # allergens_query = {
+    #     "allergens": {"$elemMatch": {"allergen_name": }}
+    # }
 
     group_query = {
         "_id": "$_id",
