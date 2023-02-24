@@ -6,7 +6,7 @@
 - The food weight variable is the estimated average weight in grams of a single unit of the food
 - You will be shown a success message if the food uploads successfully
 ## How to Upload CNF Excel Files to MongoDB
-- Download the CNF excel file for the desired food
+- Download the CNF excel file for the desired food and put it in the `data` directory
 - In the `upload_mongo.py` file in the `upload_gluten_free_foods` directory, edit the value for the following  `8` variables:
 
     - `food_code` ex. 4
