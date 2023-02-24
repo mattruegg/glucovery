@@ -10,7 +10,7 @@ db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
 ## CHANGE THESE VALUES
-food_code = -6
+food_code = 10
 food_name = "another_test_foo"
 # this is the average weight in grams of a single unit of the food. often found in the CNF.
 food_weight = 100
@@ -82,10 +82,10 @@ df = df[df['nutrient_name'].isin(nutrient_list)]
 json_str = df.to_json(orient = "records")
 lst = json.loads(json_str)
 
-sample_list = [
-        {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
-        {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
-]
+# sample_list = [
+#         {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
+#         {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
+# ]
 
 # missing nutrient code unfortunately
 res_dict = {

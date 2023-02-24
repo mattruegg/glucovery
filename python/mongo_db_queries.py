@@ -5,25 +5,20 @@ import pandas as pd
 
 from reccommended_intake import get_nutrient_intake
 
-
-# TODO confirm intake units are same as units of nutrients in intake dataset
-# TODO allergens
-
-
-# view stuff
-# can let user select age, name, gender, dietary preferences (checkbox), allergies (checkbox)
-
 connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
 client = pymongo.MongoClient(connection_string)
 db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
 # performs aggregation on nutrient values
-def sum_nutrient_values(foods_list):
+# TODO food quantity would be different for each food
+def sum_nutrient_values(foods_list, food_quantity):
     """
     returns the sum of each important nutrient from different foods
 
     foods_list: list of foods
+    # food: a dictionary containing information about a single food from the database
+    food_quantity: number of units of the food 
 
     return: dictionary where key is food name and value is it's value summed up from all foods in user diet
 
@@ -38,13 +33,19 @@ def sum_nutrient_values(foods_list):
     nutrient_values = {}
     nutrient_set = set(nutrient_list)
     for index, food in enumerate(foods_list):
+        food_name = food.get("food_name")
         nutrients = food.get("nutrients")
         for nutrient in nutrients:
             nutrient_name = nutrient.get("nutrient_name")
+            food_weight = food.get("food_weight")
+            nutrient_value = nutrient.get("value_100g")
+            # iron is multiplied by 1.8
+            iron_multiplier = 1.8 if food_name == "Iron, Fe" else 1
+            # this multiplier tells us how much of the nutrient there is in the quantity of the food
+            nutrient_multiplier = (food_weight / 100) * food_quantity * iron_multiplier
+            nutrient_values[nutrient_name] = nutrient_values.get(nutrient_name, 0) + nutrient_value * nutrient_multiplier
             if index == 0:
                 nutrient_set.remove(nutrient_name)
-            nutrient_value = nutrient.get("value_100g")
-            nutrient_values[nutrient_name] = nutrient_values.get(nutrient_name, 0) + nutrient_value
         if index == 0:
             for remaining_nutrient in nutrient_set:
                 nutrient_values[remaining_nutrient] = 0
@@ -175,14 +176,15 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
 
 
 def main():
-    a = find_food("Fuji Apple", 2)
-    b = sum_nutrient_values(a)
-    # print(b)
-    c = get_nutrient_intake(19)
-    # print(c)
-    d = determine_missing_nutrient_amounts(b, c)
-    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    missing_nutrients_list = list(d.keys())
-    e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
-    return e[0]
+    # for now, I set this value to be 1. However, it would be more.
+    a = find_food("Fuji Apple", 1)
+    # at this point, they select one food from the returned search results
+    b = sum_nutrient_values(a, 2)
+    print(b)
+    # c = get_nutrient_intake(19)
+    # d = determine_missing_nutrient_amounts(b, c)
+    # dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+    # missing_nutrients_list = list(d.keys())
+    # e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    # return e[0]
 print(main())

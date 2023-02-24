@@ -18,26 +18,30 @@ def get_nutrient_intake(age, gender):
         df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Female V2")
     else:
         df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Male V2")
+    
     # get appropriate column name based on user age
-    reac_col = ""
+    rec_col = ""
     up_col = ""
     if 19 <= age <= 30:
-        recc_col = "RDA 19-30"
+        rec_col = "RDA 19-30"
         up_col = "UL 19-30"
     elif 31 <= age <= 50:
-        recc_col = "RDA 31-50"
+        rec_col = "RDA 31-50"
         up_col = "UL 31-50"
     elif 51 <= age <= 65:
-        recc_col = "RDA 51-65"
+        rec_col = "RDA 51-65"
         up_col = "UL 51-65"
-    if len(reac_col) == 0 or len(up_col) == 0:
-        df = df[["Nutrient", recc_col, up_col]]
+    if len(rec_col) > 0 and len(up_col) > 0:
+        df = df[["Nutrient", rec_col, up_col]]
         df.columns.values[1] = "RDA"
         df.columns.values[2] = "UL"
+        # remove water
+        water_intake = df.loc[df['Nutrient'] == "Water"].to_dict("records")
+        df = df[df['Nutrient'] != "Water"]
         df.set_index("Nutrient", inplace = True)
         res = df.to_dict('index')
     else:
         raise Exception("inputted age outside the boundries of 18-65")
     return res
 
-
+print(get_nutrient_intake(19, "Female"))
