@@ -4,16 +4,20 @@ import os
 
 nutrient_filename = "intake.xlsx"
 nutrient_file_path = os.path.join("data", nutrient_filename)
-def get_nutrient_intake(age):
+def get_nutrient_intake(age, gender):
     """
     returns the recommended and upper-limit intake for each of the important nutrients
 
     age: age of the user
+    gender: gender of the user, can take on values of "Male" or "Female"
 
     return: dictionary where key is nutrient name and value is a dictionary of the recommended and upper-limit intake
 
     """
-    df = pd.read_excel(nutrient_file_path)
+    if gender == "Female":
+        df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Female V2")
+    else:
+        df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Male V2")
     # get appropriate column name based on user age
     reac_col = ""
     up_col = ""
@@ -35,3 +39,5 @@ def get_nutrient_intake(age):
     else:
         raise Exception("inputted age outside the boundries of 18-65")
     return res
+
+

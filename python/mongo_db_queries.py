@@ -5,9 +5,9 @@ import pandas as pd
 
 from reccommended_intake import get_nutrient_intake
 
+
 # TODO confirm intake units are same as units of nutrients in intake dataset
 # TODO allergens
-# how to factor in amount of missing nutrients
 
 
 # view stuff
@@ -21,20 +21,33 @@ collection = db["glucovery-collection"]
 # performs aggregation on nutrient values
 def sum_nutrient_values(foods_list):
     """
-    returns the sum of each nutrient from different foods
+    returns the sum of each important nutrient from different foods
 
     foods_list: list of foods
 
     return: dictionary where key is food name and value is it's value summed up from all foods in user diet
 
     """
+    nutrient_filename = "intake.xlsx"
+    nutrient_file_path = os.path.join("data", nutrient_filename)
+    df_nutrients = pd.read_excel(nutrient_file_path)
+
+    # keep important nutrients
+    nutrient_list = list(df_nutrients["Nutrient"])
+
     nutrient_values = {}
-    for food in foods_list:
+    nutrient_set = set(nutrient_list)
+    for index, food in enumerate(foods_list):
         nutrients = food.get("nutrients")
         for nutrient in nutrients:
             nutrient_name = nutrient.get("nutrient_name")
+            if index == 0:
+                nutrient_set.remove(nutrient_name)
             nutrient_value = nutrient.get("value_100g")
             nutrient_values[nutrient_name] = nutrient_values.get(nutrient_name, 0) + nutrient_value
+        if index == 0:
+            for remaining_nutrient in nutrient_set:
+                nutrient_values[remaining_nutrient] = 0
     return nutrient_values
 
 def determine_missing_nutrient_amounts(nutrients_in_diet, recommended_intake):
@@ -110,7 +123,6 @@ def find_food(search_query, limit):
 
 
 # nutrients = ["Protein", "Carbohydrate"]
-# TODO how to take into account allergens
 def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
     """
     returns a list of foods and their nutrients such that atleast one nutrient matches
@@ -165,7 +177,9 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
 def main():
     a = find_food("Fuji Apple", 2)
     b = sum_nutrient_values(a)
+    # print(b)
     c = get_nutrient_intake(19)
+    # print(c)
     d = determine_missing_nutrient_amounts(b, c)
     dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
     missing_nutrients_list = list(d.keys())
