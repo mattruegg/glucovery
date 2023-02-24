@@ -4,14 +4,40 @@ import pymongo
 from pymongo import MongoClient, InsertOne
 import os
 
+connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
+client = pymongo.MongoClient(connection_string)
+db = client["glucovery-db"]
+collection = db["glucovery-collection"]
+
 ## CHANGE THESE VALUES
-food_code = 1734
-food_name = "Pineapple"
-food_weight = 905
-is_vegetarian = True
-is_vegan = True
+food_code = 10
+food_name = "another_test_foo"
+# this is the average weight in grams of a single unit of the food. often found in the CNF.
+food_weight = 100
+is_vegetarian = False
+is_vegan = False
 is_liquid = False
 filename = "nutrient_profile.xls"
+allergens = {
+        "Eggs": False,
+        "Milk": False,
+        "Peanuts": False,
+        "Mustard": False,
+        "Crustaceans and molluscs": False,
+        "Fish": False,
+        "Sesame seeds": False,
+        "Soy": False,
+        "Sulphites": False,
+        "Tree Nuts": False,
+        "Wheat and triticale": False
+}
+
+# check if this food already exists in db
+if collection.count_documents({"food_code": food_code}) != 0:
+        raise Exception("You are trying to upload a food with a food ID that has already been uploaded.")
+
+if collection.count_documents({"food_name": food_name}) != 0:
+        raise Exception("You are trying to upload a food with a food name that has already been uploaded.")
 
 file_path = os.path.join("data", filename)
 
@@ -56,11 +82,10 @@ df = df[df['nutrient_name'].isin(nutrient_list)]
 json_str = df.to_json(orient = "records")
 lst = json.loads(json_str)
 
-sample_list = [
-        {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
-        {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
-]
-
+# sample_list = [
+#         {"nutrient_name": "Moisture", "value_100g": 23, "unit": "g"},
+#         {"nutrient_name": "Ash", "value_100g": 15, "unit": "g"}
+# ]
 
 # missing nutrient code unfortunately
 res_dict = {
@@ -70,14 +95,14 @@ res_dict = {
         "is_vegetarian": is_vegetarian,
         "is_vegan": is_vegan,
         "is_liquid": is_liquid,
+        'allergens': allergens,
         "nutrients": lst
 }
 
 # push a single json document to mongodb
-connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
-client = pymongo.MongoClient(connection_string)
-db = client["glucovery-db"]
-collection = db["glucovery-collection"]
+try:
+        result = collection.insert_one(res_dict)
+        print(f"successfully uploaded {food_name}")
 
-result = collection.insert_one(res_dict)
-client.close()
+except Exception as e:
+        print(e)
