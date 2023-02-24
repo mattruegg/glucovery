@@ -42,7 +42,6 @@ if collection.count_documents({"food_name": food_name}) != 0:
 file_path = os.path.join("data", filename)
 
 # TODO
-# remove duplicate transactions
 # be able to add liquids, is_liquid bool field
 
 # read in excel file
