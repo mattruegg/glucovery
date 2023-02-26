@@ -19,6 +19,7 @@ def main(page: ft.Page):
                     ft.ElevatedButton(
                         "Go to Park", on_click=lambda _: page.go("/park")),
                 ],
+                aaa = ft.TextField(label="Hello!"),
             )
         )
         if page.route == "/store":
@@ -59,8 +60,6 @@ def main(page: ft.Page):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
-
-
 
 
 ft.app(main)
