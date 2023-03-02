@@ -45,4 +45,4 @@ def get_nutrient_intake(age, gender):
         raise Exception("inputted age outside the boundries of 18-65")
     return res
 
-print(get_nutrient_intake(19, "Female"))
+# print(get_nutrient_intake(19, "Female"))

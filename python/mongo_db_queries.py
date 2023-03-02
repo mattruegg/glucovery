@@ -180,11 +180,10 @@ def main():
     a = find_food("Fuji Apple", 1)
     # at this point, they select one food from the returned search results
     b = sum_nutrient_values(a, 2)
-    print(b)
-    # c = get_nutrient_intake(19)
-    # d = determine_missing_nutrient_amounts(b, c)
-    # dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    # missing_nutrients_list = list(d.keys())
-    # e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
-    # return e[0]
+    c = get_nutrient_intake(19, "Male")
+    d = determine_missing_nutrient_amounts(b, c)
+    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+    missing_nutrients_list = list(d.keys())
+    e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    return e[0]
 print(main())
