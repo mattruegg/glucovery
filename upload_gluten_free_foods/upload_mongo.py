@@ -11,7 +11,7 @@ collection = db["glucovery-collection"]
 
 ## CHANGE THESE VALUES
 food_code = 20
-food_name = "yet_another_test"
+food_name = "test_food"
 # this is the average weight in grams of a single unit of the food. often found in the CNF.
 food_weight = 600
 is_vegetarian = False
@@ -94,8 +94,8 @@ res_dict = {
         "is_vegetarian": is_vegetarian,
         "is_vegan": is_vegan,
         "is_liquid": is_liquid,
+        "nutrients": lst,
         'allergens': allergens,
-        "nutrients": lst
 }
 
 # push a single json document to mongodb

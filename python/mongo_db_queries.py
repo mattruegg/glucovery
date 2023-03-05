@@ -80,18 +80,25 @@ def determine_missing_nutrient_amounts(nutrients_in_diet, recommended_intake):
 # limit is limit on results outputted
 search_index_name = "default1"
 # TODO - can we easily flag an incoming food as unsafe (allergies, contains gluten)
-def find_food(search_query, limit):
+def find_food(search_query, get_nutrients, limit = 5):
     """
     returns the nutrition information for foods in a users diet
 
     search query: search query made by user
     limit: number of search results to return that match
+    get_nutrients: True if we want to return nutrients else False
 
     return: list of dictionaries. each dictionary contains food_weight and nutrients list.
 
     """
 # pipeline - for each space seperated term, matches any substring with 1 character variation
 # autocomplete searches substrings as opposed to the whole word
+
+    projection = {"_id": 0, "food_name": 1}
+    if get_nutrients:
+        projection["food_weight"] = 1
+        projection["nutrients"] = 1
+
     pipeline = [
         {
             "$search": 
@@ -103,10 +110,7 @@ def find_food(search_query, limit):
 
         {"$limit": limit},
         {
-            "$project": {
-            "_id": 0, "food_weight": 1, "nutrients": 1,
-            # "score": { "$meta": "searchScore" }
-            }
+            "$project": projection
         },
     ]
 
@@ -176,14 +180,16 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
 
 
 def main():
-    # for now, I set this value to be 1. However, it would be more.
-    a = find_food("Fuji Apple", 1)
+    # just get food names
+    a = find_food("Fuji Apple", False) 
+    print(a)
     # at this point, they select one food from the returned search results
-    b = sum_nutrient_values(a, 2)
-    c = get_nutrient_intake(19, "Male")
-    d = determine_missing_nutrient_amounts(b, c)
-    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    missing_nutrients_list = list(d.keys())
-    e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
-    return e[0]
-print(main())
+    # b = sum_nutrient_values(a, 2)
+    # c = get_nutrient_intake(19, "Male")
+    # d = determine_missing_nutrient_amounts(b, c)
+    # dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+    # missing_nutrients_list = list(d.keys())
+    # e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    # return e[0]
+
+main()
