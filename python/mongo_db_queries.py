@@ -11,14 +11,13 @@ db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
 # performs aggregation on nutrient values
-# TODO food quantity would be different for each food
-def sum_nutrient_values(foods_list, food_quantity):
+# TODO pandas df for important nutrients
+def sum_nutrient_values(foods, foods_quantities):
     """
     returns the sum of each important nutrient from different foods
 
-    foods_list: list of foods
-    # food: a dictionary containing information about a single food from the database
-    food_quantity: number of units of the food 
+    foods: list where each item is a food and all it's information
+    foods_quantities: dictionary where key is food name and value is quantity that the user ate
 
     return: dictionary where key is food name and value is it's value summed up from all foods in user diet
 
@@ -32,8 +31,9 @@ def sum_nutrient_values(foods_list, food_quantity):
 
     nutrient_values = {}
     nutrient_set = set(nutrient_list)
-    for index, food in enumerate(foods_list):
+    for index, food in enumerate(foods):
         food_name = food.get("food_name")
+        food_quantity = foods_quantities[food_name]
         nutrients = food.get("nutrients")
         for nutrient in nutrients:
             nutrient_name = nutrient.get("nutrient_name")
@@ -75,12 +75,22 @@ def determine_missing_nutrient_amounts(nutrients_in_diet, recommended_intake):
             missing_nutrients[nutrient] = 0
     return missing_nutrients
 
+# TODO create index
+def find_food(food_name):
+    """
+    food_name: name of food that user selects
+    returns all food-related information about the food
+    """
+    res = collection.find({"food_name": food_name})
+    for food in res:
+        return food
+
 
 # note: no sorting on score capability with fuzzy match
 # limit is limit on results outputted
 search_index_name = "default1"
 # TODO - can we easily flag an incoming food as unsafe (allergies, contains gluten)
-def find_food(search_query, get_nutrients, limit = 5):
+def search_food_name(search_query, get_nutrients, limit = 5):
     """
     returns the nutrition information for foods in a users diet
 
@@ -181,15 +191,19 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
 
 def main():
     # just get food names
-    a = find_food("Fuji Apple", False) 
-    print(a)
-    # at this point, they select one food from the returned search results
-    # b = sum_nutrient_values(a, 2)
-    # c = get_nutrient_intake(19, "Male")
-    # d = determine_missing_nutrient_amounts(b, c)
-    # dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    # missing_nutrients_list = list(d.keys())
-    # e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
-    # return e[0]
+    a = search_food_name("Fuji Apple", False) 
+    # get all food-related information for foods user selects
+    foods = {"Fuji Apple": 1, "Gala Apple": 2}
+    ret_foods = []
+    for food_name in foods:
+        food = find_food(food_name)
+        ret_foods.append(food)
+    b = sum_nutrient_values(ret_foods, foods)
+    c = get_nutrient_intake(19, "Male")
+    d = determine_missing_nutrient_amounts(b, c)
+    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+    missing_nutrients_list = list(d.keys())
+    e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    return e[0]
 
-main()
+print(main())
