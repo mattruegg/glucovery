@@ -10,8 +10,8 @@ db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
 ## CHANGE THESE VALUES
-food_code = 20
-food_name = "test_food"
+food_code = -10
+food_name = "test_food_2"
 # this is the average weight in grams of a single unit of the food. often found in the CNF.
 food_weight = 600
 is_vegetarian = False

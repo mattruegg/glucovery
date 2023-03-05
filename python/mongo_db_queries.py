@@ -10,6 +10,7 @@ client = pymongo.MongoClient(connection_string)
 db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
+
 # performs aggregation on nutrient values
 # TODO pandas df for important nutrients
 def sum_nutrient_values(foods, foods_quantities):
@@ -185,25 +186,17 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
         res.append(obj)
     return res
 
-# a = get_food_from_nutrients(nutrients, is_vegan, is_vegetarian)
-# print(a)
-
-
-def main():
-    # just get food names
-    a = search_food_name("Fuji Apple", False) 
-    # get all food-related information for foods user selects
-    foods = {"Fuji Apple": 1, "Gala Apple": 2}
-    ret_foods = []
-    for food_name in foods:
-        food = find_food(food_name)
-        ret_foods.append(food)
-    b = sum_nutrient_values(ret_foods, foods)
-    c = get_nutrient_intake(19, "Male")
-    d = determine_missing_nutrient_amounts(b, c)
-    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    missing_nutrients_list = list(d.keys())
-    e = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
-    return e[0]
-
-print(main())
+# just get food names
+a = search_food_name("Fuji Apple", False) 
+# get all food-related information for foods user selects
+foods = {"Fuji Apple": 1, "Gala Apple": 2}
+ret_foods = []
+for food_name in foods:
+    food = find_food(food_name)
+    ret_foods.append(food)
+summed_nutrient_amounts = sum_nutrient_values(ret_foods, foods)
+rec_nutrient_intake = get_nutrient_intake(19, "Male")
+missing_nutrients = determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+missing_nutrients_list = list(missing_nutrients.keys())
+rec_foods = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
