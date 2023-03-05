@@ -3,41 +3,44 @@
 from scipy.optimize import linprog
 import json
 import sys
-# caution: path[0] is reserved for script path (or '' in REPL)
-# sys.path.insert(1, r'C:\Users\ckali\github_repos\glucovery\python_work')
+
+# from mongo_db_queries import nutrient_consumed_dict, nutrient_limits, food_info
 
 # test
 
-with open('Nutrient Limits.json', 'r') as json_file:
+with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
     nutrient_limits = json.load(json_file)
     # print("Nutrient Limits Info: ", nutrient_limits)
 
-with open('Nutrients Consumed.json', 'r') as json_file:
+with open('OptimizationModel/Nutrients Consumed.json', 'r') as json_file:
     nutrient_consumed_dict = json.load(json_file)
     # print("Nutrient Consumed Info: ", nutrient_consumed)
 
-with open('foods.json', 'r') as json_file:
+with open('OptimizationModel/foods.json', 'r') as json_file:
     food_info = json.load(json_file)
     # print("Food Info: ", food_info)
 
-
+# doesn't handle the case of ND
 right_ineq = []
 for nutrient in nutrient_limits:
     upper_nutrient = nutrient_limits[nutrient]["UL"]
     lower_nutrient = nutrient_limits[nutrient]["RDA"]
     nutrient_consumed = nutrient_consumed_dict[nutrient]
-    nutrient_right_ineq_upper = upper_nutrient - int(nutrient_consumed)
-    if (lower_nutrient - int(nutrient_consumed)) < 0:
+    nutrient_right_ineq_upper = upper_nutrient - nutrient_consumed
+    if (lower_nutrient - nutrient_consumed) < 0:
         nutrient_right_ineq_lower = 0
     else:
-        nutrient_right_ineq_lower = (lower_nutrient - int(nutrient_consumed)) * -1
+        nutrient_right_ineq_lower = (lower_nutrient - nutrient_consumed) * -1
     right_ineq.append(nutrient_right_ineq_upper)
     right_ineq.append(nutrient_right_ineq_lower)
 
-# print("Right side of inequality: ", right_ineq)
+print("Right side of inequality: ", right_ineq)
 
 # Creating objective function: apple + orange + pear, coefficients go into objective function list (i.e. all ones)
-numof1s = len(list(food_info))
+# numof1s = len(list(food_info))
+numof1s = len(food_info)
+
+# print(list(food_info))
 # print("test number of ones: ", numof1s)
 
 ObjFun = [1] * numof1s  # Obj
@@ -50,15 +53,32 @@ ObjFun = [1] * numof1s  # Obj
 # inequality (lower ineq), needs to be multiplied by -1 to switch it to >=
 # Note: the 10mg and 20mg have been handled in the right ineq
 
-def returnNutrientForKey(n, key):
-    return n[key]["value_100g"]
+# def returnNutrientForKey(n, key):
+#     return n[key]["value_100g"]
 
 left_ineq = []
-for nutrient in nutrient_limits:
-    nutrient_values = [returnNutrientForKey(i, nutrient) for i in food_info.values()]
-    nutrient_negative = [-x for x in nutrient_values]
-    left_ineq.append(nutrient_values)
-    left_ineq.append(nutrient_negative)
+num_nutrients = 20
+t = [[] for i in range(num_nutrients + 1)]
+for food in food_info:
+    for index, nutrient in enumerate(food["nutrients"]):
+        t[index].append(nutrient["value_100g"])
+for i in t:
+    if len(i) > 0:
+        left_ineq.append(i)
+        left_ineq.append([-x for x in i])
+    else:
+        break
+
+print("left side of ineq", left_ineq)
+
+# for nutrient in nutrient_limits:
+#     nutrient_values = [returnNutrientForKey(i, nutrient) for i in food_info.values()]
+#     # print("nutrient values", nutrient_values)
+#     nutrient_negative = [-x for x in nutrient_values]
+#     # print("nutrient negative", nutrient_negative)
+#     left_ineq.append(nutrient_values)
+#     left_ineq.append(nutrient_negative)
+    
 
 # print("Left side of inequality: ", left_ineq)
 
@@ -81,5 +101,5 @@ result = linprog(c=ObjFun, A_ub=left_ineq, b_ub=right_ineq, A_eq=lhs_eq, b_eq=rh
 
 print(result.x.tolist())
 
-ListofFoods = [x for x in food_info]
+ListofFoods = [x["food_name"] for x in food_info]
 print(ListofFoods)
