@@ -1,50 +1,72 @@
-{
-  "Peanut Butter": {
+[
+  {
+    "food_name": "Peanut Butter",
     "food_weight": 236,
-    "Iron, Fe": {
-      "value_100g": 77,
-      "unit": "g"
+    "nutrients":
+    [
+      {
+        "nutrient_name": "Iron, Fe",
+        "value_100g": 77,
+        "unit": "g"
+      },
+      {
+        "nutrient_name": "Vitamin B",
+        "value_100g": 22,
+        "unit": "g"
+      },
+      {
+        "nutrient_name": "Vitamin C",
+        "value_100g": 44,
+        "unit": "g"
+      }
+    ]
+    
     },
-    "Vitamin B": {
-      "value_100g": 22,
-      "unit": "g"
-    },
-    "Vitamin C": {
-      "value_100g": 44,
-      "unit": "g"
-    }
-  },
+    {
+      "food_name": "Cheese",
+      "food_weight": 236,
+      "nutrients":
+      [
+        {
+          "nutrient_name": "Iron, Fe",
+          "value_100g": 76,
+          "unit": "g"
+        },
+        {
+          "nutrient_name": "Vitamin B",
+          "value_100g": 21,
+          "unit": "g"
+        },
+        {
+          "nutrient_name": "Vitamin C",
+          "value_100g": 43,
+          "unit": "g"
+        }
+      ]
+      
+      },
+      {
+        "food_name": "Carrot",
+        "food_weight": 236,
+        "nutrients":
+        [
+          {
+            "nutrient_name": "Iron, Fe",
+            "value_100g": 75,
+            "unit": "g"
+          },
+          {
+            "nutrient_name": "Vitamin B",
+            "value_100g": 20,
+            "unit": "g"
+          },
+          {
+            "nutrient_name": "Vitamin C",
+            "value_100g": 42,
+            "unit": "g"
+          }
+        ]
+        
+        }
+]
 
-    "Cheese": {
-    "food_weight": 236,
-    "Iron, Fe": {
-      "value_100g": 76,
-      "unit": "g"
-    },
-    "Vitamin B": {
-      "value_100g": 21,
-      "unit": "g"
-    },
-    "Vitamin C": {
-      "value_100g": 43,
-      "unit": "g"
-    }
-  },
-
-  "Carrot": {
-    "food_weight": 236,
-    "Iron, Fe": {
-      "value_100g": 75,
-      "unit": "g"
-    },
-    "Vitamin B": {
-      "value_100g": 20,
-      "unit": "g"
-    },
-    "Vitamin C": {
-      "value_100g": 42,
-      "unit": "g"
-    }
-  }
-
-  }
