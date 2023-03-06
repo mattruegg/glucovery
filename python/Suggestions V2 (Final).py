@@ -4,21 +4,25 @@ from scipy.optimize import linprog
 import json
 import sys
 
-# from mongo_db_queries import nutrient_consumed_dict, nutrient_limits, food_info
+from mongo_db_queries import rec_foods, rec_nutrient_intake, summed_nutrient_amounts
 
 # test
 
-with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
-    nutrient_limits = json.load(json_file)
-    # print("Nutrient Limits Info: ", nutrient_limits)
+# with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
+#     nutrient_limits = json.load(json_file)
+#     # print("Nutrient Limits Info: ", nutrient_limits)
 
-with open('OptimizationModel/Nutrients Consumed.json', 'r') as json_file:
-    nutrient_consumed_dict = json.load(json_file)
-    # print("Nutrient Consumed Info: ", nutrient_consumed)
+# with open('OptimizationModel/Nutrients Consumed.json', 'r') as json_file:
+#     nutrient_consumed_dict = json.load(json_file)
+#     # print("Nutrient Consumed Info: ", nutrient_consumed)
 
-with open('OptimizationModel/foods.json', 'r') as json_file:
-    food_info = json.load(json_file)
-    # print("Food Info: ", food_info)
+# with open('OptimizationModel/foods.json', 'r') as json_file:
+#     food_info = json.load(json_file)
+#     # print("Food Info: ", food_info)
+
+nutrient_limits = rec_nutrient_intake
+nutrient_consumed_dict = summed_nutrient_amounts
+food_info = rec_foods
 
 # doesn't handle the case of ND
 right_ineq = []
@@ -53,8 +57,6 @@ ObjFun = [1] * numof1s  # Obj
 # inequality (lower ineq), needs to be multiplied by -1 to switch it to >=
 # Note: the 10mg and 20mg have been handled in the right ineq
 
-# def returnNutrientForKey(n, key):
-#     return n[key]["value_100g"]
 
 left_ineq = []
 num_nutrients = 20
@@ -70,17 +72,6 @@ for i in t:
         break
 
 print("left side of ineq", left_ineq)
-
-# for nutrient in nutrient_limits:
-#     nutrient_values = [returnNutrientForKey(i, nutrient) for i in food_info.values()]
-#     # print("nutrient values", nutrient_values)
-#     nutrient_negative = [-x for x in nutrient_values]
-#     # print("nutrient negative", nutrient_negative)
-#     left_ineq.append(nutrient_values)
-#     left_ineq.append(nutrient_negative)
-    
-
-# print("Left side of inequality: ", left_ineq)
 
 # Eqaulity Constraints --> None in our scenario but is a required input for linprog
 lhs_eq = [[0, 0, 0]]  # 0*apple +0*orange + 0*pear = 0
