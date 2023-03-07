@@ -27,7 +27,8 @@ food_info = rec_foods
 # doesn't handle the case of ND
 right_ineq = []
 for nutrient in nutrient_limits:
-    upper_nutrient = nutrient_limits[nutrient]["UL"]
+    upper_nutrient_value = nutrient_limits[nutrient]["UL"] 
+    upper_nutrient = float("inf") if isinstance(upper_nutrient_value, str) else upper_nutrient_value
     lower_nutrient = nutrient_limits[nutrient]["RDA"]
     nutrient_consumed = nutrient_consumed_dict[nutrient]
     nutrient_right_ineq_upper = upper_nutrient - nutrient_consumed
