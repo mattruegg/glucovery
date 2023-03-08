@@ -139,12 +139,13 @@ def search_food_name(search_query, get_nutrients, limit = 5):
 
 
 # nutrients = ["Protein", "Carbohydrate"]
-def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
+def get_food_from_nutrients(nutrients, dietary_preferences, limit, allergens = ""):
     """
     returns a list of foods and their nutrients such that atleast one nutrient matches
 
     nutrients: list of nutrients that aren't being met
     dietary_preferences: dictionary of dietary_preferences for a user
+    limit: limit on results returned
     allergies: list of allergens for a user
 
     return: list of dictionaries. each dictionary contains food_name, food_weight, and nutrients list.
@@ -177,7 +178,8 @@ def get_food_from_nutrients(nutrients, dietary_preferences, allergens = ""):
             {"$unwind": "$nutrients"},
             {"$match": {"nutrients.nutrient_name": {"$in": nutrients}}},
             {"$group": group_query},
-            { "$project": {"_id" : 0}}
+            { "$project": {"_id" : 0}},
+            {"$limit": limit}
         ]
 
     q = collection.aggregate(pipeline)
@@ -199,4 +201,4 @@ rec_nutrient_intake = get_nutrient_intake(19, "Male")
 missing_nutrients = determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
 dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
 missing_nutrients_list = list(missing_nutrients.keys())
-rec_foods = get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+rec_foods = get_food_from_nutrients(missing_nutrients_list, dietary_preferences, 3)
