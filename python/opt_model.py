@@ -26,6 +26,7 @@ nutrient_consumed_dict = summed_nutrient_amounts
 food_info = rec_foods
 
 right_ineq = []
+missing_nutrients = [] # for testing purposes
 for nutrient in nutrient_limits:
     upper_nutrient_value = nutrient_limits[nutrient]["UL"] 
     upper_nutrient = 10000000 if isinstance(upper_nutrient_value, str) else upper_nutrient_value
@@ -35,9 +36,12 @@ for nutrient in nutrient_limits:
     if (lower_nutrient - nutrient_consumed) < 0:
         nutrient_right_ineq_lower = 0
     else:
+        missing_nutrients.append(nutrient)  # testing purposes
         nutrient_right_ineq_lower = (lower_nutrient - nutrient_consumed) * -1
     right_ineq.append(nutrient_right_ineq_upper)
     right_ineq.append(nutrient_right_ineq_lower)
+
+# print("right ineq", right_ineq)
 
 # print("Right side of inequality: ", right_ineq)
 
@@ -79,7 +83,7 @@ for nutrient in nutrient_limits:
     left_ineq.append(pos_tmp)
     left_ineq.append(neg_tmp)
 
-print("left side of ineq", left_ineq)
+# print("left side of ineq", left_ineq)
 # validation check
 # print(len(food_info), len(food_info) == len(left_ineq[0]))
 
@@ -89,7 +93,7 @@ for i in range(len(food_info)):
     tmp.append(0)
 lhs_eq = []
 lhs_eq.append(tmp)  
-print("blah", len(food_info), len(food_info) == len(lhs_eq[0]))
+# print("blah", len(food_info), len(food_info) == len(lhs_eq[0]))
 rhs_eq = [0]
 
 # Bounds for foods (any # of servings can be suggested from 0 to positive infinity)
@@ -102,14 +106,14 @@ for i in range(len(food_info)):
 #        (0, float("inf"))]  # Bounds of Pear
 
 # Optimizing objective function with all the constraints (inequalities)
-result = linprog(c=ObjFun, A_ub=left_ineq, b_ub=right_ineq, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,
-                 method='highs-ipm')
+# result = linprog(c=ObjFun, A_ub=left_ineq, b_ub=right_ineq, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,
+#                  method='highs-ipm')
 
-print(result.fun)
+# print(result.fun)
 
-print(result.success)
+# print(result.success)
 
-print(result.x.tolist())
+# print(result.x.tolist())
 
 ListofFoods = [x["food_name"] for x in food_info]
-print(ListofFoods)
+# print(ListofFoods)

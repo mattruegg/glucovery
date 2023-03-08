@@ -201,4 +201,7 @@ rec_nutrient_intake = get_nutrient_intake(19, "Male")
 missing_nutrients = determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
 dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
 missing_nutrients_list = list(missing_nutrients.keys())
+# different set of 3 foods can be returned everytime. not necessairly the same everyrimt
 rec_foods = get_food_from_nutrients(missing_nutrients_list, dietary_preferences, 3)
+
+
