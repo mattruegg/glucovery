@@ -67,6 +67,29 @@
           }
         ]
         
-        }
+        },
+        {
+          "food_name": "Honey",
+          "food_weight": 236,
+          "nutrients":
+          [
+            {
+              "nutrient_name": "Iron, Fe",
+              "value_100g": 75,
+              "unit": "g"
+            },
+            {
+              "nutrient_name": "Vitamin B",
+              "value_100g": 20,
+              "unit": "g"
+            },
+            {
+              "nutrient_name": "Vitamin C",
+              "value_100g": 42,
+              "unit": "g"
+            }
+          ]
+          
+          }
 ]
 
