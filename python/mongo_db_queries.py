@@ -10,7 +10,6 @@ client = pymongo.MongoClient(connection_string)
 db = client["glucovery-db"]
 collection = db["glucovery-collection"]
 
-
 # performs aggregation on nutrient values
 # TODO pandas df for important nutrients
 def sum_nutrient_values(foods, foods_quantities):
@@ -189,7 +188,11 @@ def get_food_from_nutrients(nutrients, dietary_preferences, limit, allergens = "
     return res
 
 # just get food names
-a = search_food_name("Fuji Apple", False) 
+foods = search_food_name("Fuji Apple", False) 
+food_names = []
+for food in foods:
+    food_names.append(food["food_name"])
+
 # get all food-related information for foods user selects
 foods = {"Fuji Apple": 1, "Gala Apple": 2}
 ret_foods = []
