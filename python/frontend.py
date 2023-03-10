@@ -1,11 +1,11 @@
 import flet as ft
 import asyncio
 import time
+from mongo_db_queries import search_food_name as search_food_in_mongo
 
 
 async def main(page: ft.Page):
     chosen_foods = {}
-    available_foods = {'apple', 'pear', 'orange', 'kiwi', 'cherry'}
     chosen_symptoms = {}
     available_symptoms = {'headache', 'numbness', 'nausea'}
 
@@ -30,9 +30,16 @@ async def main(page: ft.Page):
 
     # SEND MONGO DB SEARCH AND RETRIEVE FOODS
     async def search_for_foods(e):
+        temp = []
+        for y in food_dropdown.options:
+            temp.append(y)
+        for y in temp:
+            food_dropdown.options.remove(y)
         search_query = mongo_food_search
-        print(search_query)
-        # TODO connect to mongo db
+        a = search_food_in_mongo(search_query.value, False)
+        for x in a:
+            food_dropdown.options.append(ft.dropdown.Option(x['food_name']))
+        await page.update_async()
 
     # CHOOSE A FOOD AND REMOVE IT FROM THE DROPDOWN
     async def choose_food_from_dropdown(e):
@@ -120,8 +127,6 @@ async def main(page: ft.Page):
         "Search", on_click=search_for_foods)
 
     food_dropdown = ft.Dropdown(on_change=choose_food_from_dropdown)
-    for x in available_foods:
-        food_dropdown.options.append(ft.dropdown.Option(x))
 
     mongo_symptom_search = ft.TextField()
     search_mongo_symptoms_button = ft.ElevatedButton(
@@ -136,7 +141,5 @@ async def main(page: ft.Page):
 
     # SET UP START OF PROGRAM
     await foods_page(e=any)
-    # start_button = ft.ElevatedButton("Start", on_click=start_program)
-    # await page.add_async(start_button)
 
 ft.app(target=main)
