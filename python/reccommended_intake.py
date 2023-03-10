@@ -5,17 +5,19 @@ import os
 nutrient_filename = "intake.xlsx"
 nutrient_file_path = os.path.join("data", nutrient_filename)
 # TODO pickle save to disk. 
-def get_nutrient_intake(age, gender):
+def get_nutrient_intake(user_information):
     """
     returns the recommended and upper-limit intake for each of the important nutrients
 
-    age: age of the user
-    gender: gender of the user, can take on values of "Male" or "Female"
+    user_information: dictionary containing general information about user
 
     return: dictionary where key is nutrient name and value is a dictionary of the recommended and upper-limit intake
 
     """
-    if gender == "Female":
+    sex = user_information["sex"]
+    age = user_information["age"]
+
+    if sex == "Female":
         df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Female V2")
     else:
         df = pd.read_excel(nutrient_file_path, sheet_name = "Adult Male V2")
