@@ -136,7 +136,7 @@ class NutrientCalculations:
         """
         returns a list of foods and their nutrients such that atleast one nutrient matches
 
-        nutrients: list of nutrients that aren't being met
+        nutrients: list of nutrients that are missing from user's diet
         dietary_preferences: dictionary of dietary_preferences for a user
         limit: limit on results returned
         allergies: list of allergens for a user
