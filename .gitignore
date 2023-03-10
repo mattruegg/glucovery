@@ -4,3 +4,5 @@
 .idea/modules.xml
 .idea/vcs.xml
 .idea/inspectionProfiles/profiles_settings.xml
+python/__pycache__/mongo_db_queries.cpython-311.pyc
+python/__pycache__/reccommended_intake.cpython-311.pyc
