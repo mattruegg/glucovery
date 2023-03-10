@@ -1,7 +1,7 @@
 import flet as ft
 import asyncio
 import time
-from mongo_db_queries import search_food_name as search_food_in_mongo
+from mongo_db_queries import nutrient_calculations as nc
 
 
 async def main(page: ft.Page):
@@ -36,7 +36,7 @@ async def main(page: ft.Page):
         for y in temp:
             food_dropdown.options.remove(y)
         search_query = mongo_food_search
-        a = search_food_in_mongo(search_query.value, False)
+        a = nc.search_food_name(search_query.value)
         for x in a:
             food_dropdown.options.append(ft.dropdown.Option(x['food_name']))
         await page.update_async()
