@@ -25,7 +25,10 @@ class OptModel:
             upper_nutrient_value = nutrient_limits[nutrient]["UL"] 
             upper_nutrient = 10000000 if isinstance(upper_nutrient_value, str) else upper_nutrient_value
             lower_nutrient = nutrient_limits[nutrient]["RDA"]
-            nutrient_consumed = nutrient_consumed_dict[nutrient]
+            if nutrient in nutrient_consumed_dict:
+                nutrient_consumed = nutrient_consumed_dict[nutrient]
+            else:
+                nutrient_consumed = lower_nutrient
             nutrient_right_ineq_upper = upper_nutrient - nutrient_consumed
             if (lower_nutrient - nutrient_consumed) < 0:
                 nutrient_right_ineq_lower = 0
@@ -99,7 +102,17 @@ class OptModel:
 
         print("success: ", result.success)
 
-        # print("quantities of foods: ", result.x.tolist())
+        if result.success:
+            quantities = result.x.tolist()
+            for quantity, food in zip(quantities, food_info):
+                if quantity > 0:
+                    food_name = food["food_name"]
+                    food_weight = food["food_weight"]
+                    quantity * 100
+                    print(f"{food_name}: {quantity}")
+
+
+        # print("quantities of foods: ", quantities)
 
         # ListofFoods = [x["food_name"] for x in food_info]
         # print(ListofFoods)
