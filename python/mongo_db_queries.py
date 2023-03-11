@@ -183,29 +183,31 @@ class NutrientCalculations:
 
 
 
-# create instance of class
-nutrient_calculations = NutrientCalculations()
-# searching for foods by name
-nutrient_calculations.search_food_name("Fuji Apple")
-# example of foods that user selected that they ate
-foods_user_ate = {"Fuji Apple": 1, "Gala Apple": 2, }
-foods = nutrient_calculations.find_foods(foods_user_ate)
-summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
-user_information = {"sex": "Male", "age": 19}
-# create an object of the class RecommendedNutientIntake
-nutrient_intake = RecommendedNutrientIntake()
-rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
-missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
-dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-missing_nutrients_list = list(missing_nutrients.keys())
-print("number of missing nutrients: ", len(missing_nutrients))
-limit_on_rec_foods = 71
-# different set of foods can be returned everytime. not necessairly the same everytime
-# TODO not using how much is missing currently
-possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, limit_on_rec_foods)
-print("number of possible foods: ", len(possible_foods))
-# create an object of the class OptModel
-optimization_model = OptModel()
-optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
+# # create instance of class
+# nutrient_calculations = NutrientCalculations()
+# # searching for foods by name
+# nutrient_calculations.search_food_name("Fuji Apple")
+# # example of foods that user selected that they ate
+# foods_user_ate = {"Fuji Apple": 1, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+#                   "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
+# foods = nutrient_calculations.find_foods(foods_user_ate)
+# summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
+# user_information = {"sex": "Male", "age": 19}
+# # create an object of the class RecommendedNutientIntake
+# nutrient_intake = RecommendedNutrientIntake()
+# rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
+# missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+# dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+# missing_nutrients_list = list(missing_nutrients.keys())
+# print("missing nutrients: ", missing_nutrients_list)
+# print("number of missing nutrients: ", len(missing_nutrients))
+# limit_on_rec_foods = 10
+# # different set of foods can be returned everytime. not necessairly the same everytime
+# # TODO not using how much is missing currently
+# possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, limit_on_rec_foods)
+# print("number of possible foods: ", len(possible_foods))
+# # create an object of the class OptModel
+# optimization_model = OptModel()
+# optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
 
 
