@@ -1,7 +1,7 @@
 # Uploading to MongoDB
 
 ## login to MongoDB
-you can view the foods you upload here: `https://cloud.mongodb.com/v2/63cef72751e1dd59e282be0d#/metrics/replicaSet/63cefc15855a5d7578611026/explorer/glucovery-db/glucovery-collection/find` Username is `ckalia@uwaterloo.ca` and password is `ymck-glucovery`
+you can view the foods you upload here: `https://cloud.mongodb.com/v2/63cef72751e1dd59e282be0d#/metrics/replicaSet/63cefc15855a5d7578611026/explorer/glucovery-db/glucovery-collection/find`
 
 ## Important Condsiderations
 - Before downloading the CNF excel file, choose the serving size `100 grams of edible portion = 100 grams`
