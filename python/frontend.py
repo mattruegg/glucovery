@@ -1,13 +1,34 @@
 import flet as ft
 import asyncio
 import time
-from mongo_db_queries import nutrient_calculations as nc
+from mongo_db_queries import NutrientCalculations as nc
 
 
 async def main(page: ft.Page):
+    chosen_persona = {}
     chosen_foods = {}
     chosen_symptoms = {}
     available_symptoms = {'headache', 'numbness', 'nausea'}
+
+    personas = [{'sex': 'Male', 'age': '28'}, {'sex': 'Female', 'age': '37'}, {
+        'sex': 'Female', 'age': '49'}, {'sex': 'Male', 'age': '62'}]
+
+    #
+    # --------------------------------------- PERSONAS PAGE ---------------------------------------
+    #
+
+    async def personas_page(e):
+        await page.clean_async()
+        for x in personas:
+            profile = ft.Text(f"Sex: {x['sex']}, Age: {x['age']}")
+            profile_button = ft.ElevatedButton(
+                "Select", on_click=choose_persona, data=x)
+            await page.add_async(ft.Row([profile, profile_button]))
+
+    async def choose_persona(e):
+        chosen_persona = e.control.data
+        # print(chosen_persona)
+        await foods_page(e=any)
 
     #
     # --------------------------------------- FOODS PAGE ---------------------------------------
@@ -36,7 +57,7 @@ async def main(page: ft.Page):
         for y in temp:
             food_dropdown.options.remove(y)
         search_query = mongo_food_search
-        a = nc.search_food_name(search_query.value)
+        a = nc.search_food_name(search_query.value, search_query.value)
         for x in a:
             food_dropdown.options.append(ft.dropdown.Option(x['food_name']))
         await page.update_async()
@@ -59,7 +80,7 @@ async def main(page: ft.Page):
     # STORE FOOD QUANTITIES
     async def textbox_results(e):
         chosen_foods[e.control.label] = e.control.value
-        print(chosen_foods)
+        # print(chosen_foods)
 
     # REMOVE CHOSEN FOOD
     async def remove_chosen_food(e):
@@ -81,7 +102,8 @@ async def main(page: ft.Page):
                     ft.Text(x),
                     ft.Slider(min=1, max=5, divisions=4,
                               value=chosen_symptoms[x], label="{value}", data=x, on_change_end=slider_results),
-                    ft.ElevatedButton("X", on_click=remove_chosen_symptom, data=x)
+                    ft.ElevatedButton(
+                        "X", on_click=remove_chosen_symptom, data=x)
                 ]
             ))
         await page.update_async()
@@ -89,7 +111,7 @@ async def main(page: ft.Page):
     # SEND MONGO DB SEARCH AND RETRIEVE SYMPTOMS
     async def search_for_symptoms(e):
         search_query = mongo_symptom_search
-        print(search_query)
+        # print(search_query)
         # TODO connect to mongo db
 
     # CHOOSE A SYMPTOM AND REMOVE IT FROM THE DROPDOWN
@@ -110,14 +132,14 @@ async def main(page: ft.Page):
     # STORE SYMPTOM VALUES
     async def slider_results(e):
         chosen_symptoms[e.control.data] = e.control.value
-        print(chosen_symptoms)
+        # print(chosen_symptoms)
 
     # REMOVE CHOSEN FOOD
     async def remove_chosen_symptom(e):
         chosen_symptoms.pop(e.control.data)
         symptom_dropdown.options.append(ft.dropdown.Option(e.control.data))
         await symptoms_page(e)
-    
+
     #
     # --------------------------------------- INITIALIZE VARIABLES ---------------------------------------
     #
@@ -139,7 +161,7 @@ async def main(page: ft.Page):
     go_to_symptoms = ft.ElevatedButton(
         "Go To Symptoms", on_click=symptoms_page)
 
-    # SET UP START OF PROGRAM
-    await foods_page(e=any)
+    # START PROGRAM
+    await personas_page(e=any)
 
 ft.app(target=main)
