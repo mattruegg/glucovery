@@ -102,6 +102,7 @@ class OptModel:
 
         print("success: ", result.success)
 
+        optimized_foods = {}
         if result.success:
             quantities = result.x.tolist()
             for quantity, food in zip(quantities, food_info):
@@ -109,8 +110,8 @@ class OptModel:
                     food_name = food["food_name"]
                     food_weight = food["food_weight"]
                     quantity * 100
-                    print(f"{food_name}: {quantity}")
-
+                    optimized_foods[food_name] = quantity
+            print(optimized_foods)
 
         # print("quantities of foods: ", quantities)
 
