@@ -97,26 +97,16 @@ class OptModel:
         # Optimizing objective function with all the constraints (inequalities)
         result = linprog(c=ObjFun, A_ub=left_ineq, b_ub=right_ineq, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,
                          method='highs-ipm')
-
-        # print(result.fun)
-
-        print("success: ", result.success)
-
+        
         optimized_foods = {}
         if result.success:
             quantities = result.x.tolist()
             for quantity, food in zip(quantities, food_info):
                 if quantity > 0:
                     food_name = food["food_name"]
-                    food_weight = food["food_weight"]
-                    quantity * 100
-                    optimized_foods[food_name] = quantity
-            print(optimized_foods)
-
-        # print("quantities of foods: ", quantities)
-
-        # ListofFoods = [x["food_name"] for x in food_info]
-        # print(ListofFoods)
+                    quantity_grams = quantity * 100
+                    optimized_foods[food_name] = quantity_grams
+        return optimized_foods
 
 
 # with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
