@@ -75,8 +75,6 @@ class OptModel:
             left_ineq.append(neg_tmp)
 
         # print("left side of ineq", left_ineq)
-        # validation check
-        # print(len(food_info), len(food_info) == len(left_ineq[0]))
 
         # Eqaulity Constraints --> None in our scenario but is a required input for linprog
         tmp = []
