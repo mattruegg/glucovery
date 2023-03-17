@@ -13,7 +13,6 @@ def check_contain_nutrients(possible_foods, missing_nutrients):
     """
 
     for food in possible_foods:
-        # lst = []
         if len(missing_nutrients) == 0:
             break
         nutrients = food["nutrients"]
@@ -26,8 +25,7 @@ def check_contain_nutrients(possible_foods, missing_nutrients):
     return len(missing_nutrients) == 0
 
 
-def test_correctness(optimized_foods, possible_foods, missing_nutrients):
-    print(missing_nutrients)
+def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake):
     # get food information for foods found in optimized foods
     food_information = []
     for possible_food in possible_foods:
@@ -38,52 +36,73 @@ def test_correctness(optimized_foods, possible_foods, missing_nutrients):
     # built dict where key is nutrient and amount is value across all foods in optimized foods
     nutrient_amounts = {}
     for food, quantity in food_information:
-        food_name = food["food_weight"]
+        food_name = food["food_name"]
         nutrients = food["nutrients"]
         for nutrient in nutrients:
             nutrient_name = nutrient["nutrient_name"]
             nutrient_value = nutrient["value_100g"]
-            if nutrient_name in missing_nutrients:
-                nutrient_amounts[nutrient_name] = nutrient_amounts.get(nutrient_name, 0) + get_total_amount(food_name, quantity, nutrient_value)
+            nutrient_amounts[nutrient_name] = nutrient_amounts.get(nutrient_name, 0) + get_total_amount(food_name, quantity, nutrient_value)
     print("nutrient_amounts: ", nutrient_amounts)
 
     # compare summed amounts with rda value for nutrient
+    nutrient_amounts_met = True
     for nutrient_name, nutrient_amount in nutrient_amounts.items():
-        nutrient_amount_missing = missing_nutrients[nutrient_name]
-        if nutrient_amount_missing - nutrient_amount > 0:
+        upper_nutrient_value = rec_nutrient_intake[nutrient_name]["UL"] 
+        upper_nutrient = 10000000 if isinstance(upper_nutrient_value, str) else upper_nutrient_value
+        lower_nutrient = rec_nutrient_intake[nutrient_name]["RDA"]
+        previous_nutrient_amount = summed_nutrient_amounts[nutrient_name]
+        new_nutrient_amount = previous_nutrient_amount + nutrient_amount
+        if new_nutrient_amount < lower_nutrient:
             print(f"Nutrient {nutrient_name} is still not met")
-    print("all nutrient amounts are met!")
+            nutrient_amounts_met = False
+        elif (previous_nutrient_amount < upper_nutrient) and (new_nutrient_amount > upper_nutrient):
+            print((f"The recommendations brought nutrient {nutrient_name} above the upper limit"))
+            nutrient_amounts_met = False
+    if nutrient_amounts_met:
+        print("all nutrient amounts are met!")
         
 
 # gets total summed amount given quantity of food in opt amount and adds it to summed_amount in user diet
 def get_total_amount(food_name, food_quantity, nutrient_value):
     iron_multiplier = 1.8 if food_name == "Iron, Fe" else 1
     return (food_quantity/ 100) * nutrient_value * iron_multiplier
-        
-        
 
 
 def main():
     # initalize input
 
     dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
-    user_information = {"sex": "Male", "age": 19}
+    user_information = {"sex": "Female", "age": 19}
 
     nutrient_intake = RecommendedNutrientIntake()
     rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
 
-    summed_nutrient_amounts = {"Protein": 40, "Iron, Fe": 6, "Folate, naturally occurring": 400,
-                               'Vitamin B-6': 1.3, 'Vitamin B-12': 2.4, 'Vitamin D': 15,'Copper, Cu': 0.9, 
-                               'Zinc, Zn':11,'Calcium, Ca': 1000, 'Magnesium, Mg': 400,
-                               'Retinol activity equivalents, RAE': 900, 'Tocopherol, alpha': 15,
-                               'Vitamin K': 120, 'Potassium, K': 4700, 'Phosphorus, P': 700, 
-                               'Sodium, Na': 1500, 'Manganese, Mn': 2.3, 'Selenium, Se':55, 'Carbohydrate': 130, 
-                               'Fibre, total dietary': 38}
+
+    # male
+    # summed_nutrient_amounts = {"Protein": 36, "Iron, Fe": 20, "Folate, naturally occurring": 400,
+    #                            'Vitamin B-6': 1.3, 'Vitamin B-12': 2.4, 'Vitamin D': 15,'Copper, Cu': 0.9, 
+    #                            'Zinc, Zn':11,'Calcium, Ca': 1000, 'Magnesium, Mg': 400,
+    #                            'Retinol activity equivalents, RAE': 900, 'Tocopherol, alpha': 15,
+    #                            'Vitamin K': 120, 'Potassium, K': 4700, 'Phosphorus, P': 700, 
+    #                            'Sodium, Na': 1500, 'Manganese, Mn': 2.3, 'Selenium, Se':55, 'Carbohydrate': 130, 
+    #                            'Fibre, total dietary': 38}
+
+    # female
+    summed_nutrient_amounts = {'Iron, Fe': 13.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
+                               'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
+                               'Calcium, Ca': 1000.0, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
+                               'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
+                               'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 45.0, 
+                               'Carbohydrate': 130.0, 'Fibre, total dietary': 25.0}
+
+
     
     nutrient_calculations = NutrientCalculations()
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+    print("missing nutrients", missing_nutrients)
     missing_nutrients_list = list(missing_nutrients.keys())
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    print("possible foods: ", len(possible_foods))
 
     # check if foods contain all nutrients
     foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
@@ -92,9 +111,8 @@ def main():
         opt_model = OptModel()
         optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
         print("optimized foods: ", optimized_foods)
-        return test_correctness(optimized_foods, possible_foods, missing_nutrients)
+        return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
     else:
         print("no possible foods")
-    
 
 main()

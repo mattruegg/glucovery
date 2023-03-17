@@ -133,7 +133,7 @@ class NutrientCalculations:
 
 
     # nutrients = ["Protein", "Carbohydrate"]
-    def get_food_from_nutrients(this, nutrients, dietary_preferences, limit = 100, allergens = ""):
+    def get_food_from_nutrients(this, nutrients, dietary_preferences, allergens = ""):
         """
         returns a list of foods and their nutrients such that atleast one nutrient matches
 
@@ -172,7 +172,7 @@ class NutrientCalculations:
                 {"$unwind": "$nutrients"},
                 {"$group": group_query},
                 { "$project": {"_id" : 0}},
-                {"$limit": limit}
+                # {"$limit": limit}
             ]
 
         q = collection.aggregate(pipeline)

@@ -20,7 +20,6 @@ class OptModel:
         """
 
         right_ineq = []
-        missing_nutrients = [] # for testing purposes
         for nutrient in nutrient_limits:
             upper_nutrient_value = nutrient_limits[nutrient]["UL"] 
             upper_nutrient = 10000000 if isinstance(upper_nutrient_value, str) else upper_nutrient_value
@@ -33,7 +32,6 @@ class OptModel:
             if (lower_nutrient - nutrient_consumed) < 0:
                 nutrient_right_ineq_lower = 0
             else:
-                missing_nutrients.append(nutrient)  # testing purposes
                 nutrient_right_ineq_lower = (lower_nutrient - nutrient_consumed) * -1
             right_ineq.append(nutrient_right_ineq_upper)
             right_ineq.append(nutrient_right_ineq_lower)
@@ -106,7 +104,9 @@ class OptModel:
                     food_name = food["food_name"]
                     quantity_grams = quantity * 100
                     optimized_foods[food_name] = quantity_grams
-        return optimized_foods
+                    return optimized_foods
+        else:
+            print("no opt results found")
 
 
 # with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
