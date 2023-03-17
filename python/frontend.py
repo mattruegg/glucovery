@@ -39,14 +39,16 @@ async def main(page: ft.Page):
         await page.clean_async()
         await page.add_async(ft.Row([mongo_food_search, search_mongo_foods_button]))
         await page.add_async(food_dropdown)
+        lv = ft.ListView(expand=True, spacing=10)
         for x in chosen_foods:
-            await page.add_async(ft.Row(
+            lv.controls.append(ft.Row(
                 [
                     ft.TextField(label=x, on_change=textbox_results,
                                  value=chosen_foods[x]),
                     ft.ElevatedButton("X", on_click=remove_chosen_food, data=x)
                 ]
             ))
+        await page.add_async(lv)
         await page.add_async(go_to_symptoms)
         await page.update_async()
 
