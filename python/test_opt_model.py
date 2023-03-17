@@ -72,6 +72,9 @@ def main():
     # initalize input
 
     dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+    allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+        "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+}
     user_information = {"sex": "Female", "age": 19}
 
     nutrient_intake = RecommendedNutrientIntake()
@@ -88,7 +91,7 @@ def main():
     #                            'Fibre, total dietary': 38}
 
     # female
-    summed_nutrient_amounts = {'Iron, Fe': 13.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
+    summed_nutrient_amounts = {'Iron, Fe': 18.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
                                'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
                                'Calcium, Ca': 1000.0, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
                                'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
@@ -101,7 +104,7 @@ def main():
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
     print("missing nutrients", missing_nutrients)
     missing_nutrients_list = list(missing_nutrients.keys())
-    possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences)
+    possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("possible foods: ", len(possible_foods))
 
     # check if foods contain all nutrients

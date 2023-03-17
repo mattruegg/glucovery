@@ -133,7 +133,7 @@ class NutrientCalculations:
 
 
     # nutrients = ["Protein", "Carbohydrate"]
-    def get_food_from_nutrients(this, nutrients, dietary_preferences, allergens = ""):
+    def get_food_from_nutrients(this, nutrients, dietary_preferences, allergens):
         """
         returns a list of foods and their nutrients such that atleast one nutrient matches
 
@@ -168,7 +168,7 @@ class NutrientCalculations:
         }
 
         pipeline = [
-                {"$match": {"$and": [nutrient_query, {"is_vegan": is_vegan}, {"is_vegetarian": is_vegetarian}]}},
+                {"$match": {"$and": [nutrient_query, {"is_vegan": is_vegan}, {"is_vegetarian": is_vegetarian}, {"allergens": allergens}]}},
                 {"$unwind": "$nutrients"},
                 {"$group": group_query},
                 { "$project": {"_id" : 0}},
@@ -198,13 +198,16 @@ class NutrientCalculations:
 # rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
 # missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
 # dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+# allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+#         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+# }
 # missing_nutrients_list = list(missing_nutrients.keys())
 # print("missing nutrients: ", missing_nutrients_list)
 # print("number of missing nutrients: ", len(missing_nutrients))
 # limit_on_rec_foods = 90
 # # different set of foods can be returned everytime. not necessairly the same everytime
 # # TODO not using how much is missing currently
-# possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, limit_on_rec_foods)
+# possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
 # print("number of possible foods: ", len(possible_foods))
 # # create an object of the class OptModel
 # optimization_model = OptModel()
