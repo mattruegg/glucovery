@@ -20,7 +20,6 @@ class OptModel:
         """
 
         right_ineq = []
-        missing_nutrients = [] # for testing purposes
         for nutrient in nutrient_limits:
             upper_nutrient_value = nutrient_limits[nutrient]["UL"] 
             upper_nutrient = 10000000 if isinstance(upper_nutrient_value, str) else upper_nutrient_value
@@ -33,7 +32,6 @@ class OptModel:
             if (lower_nutrient - nutrient_consumed) < 0:
                 nutrient_right_ineq_lower = 0
             else:
-                missing_nutrients.append(nutrient)  # testing purposes
                 nutrient_right_ineq_lower = (lower_nutrient - nutrient_consumed) * -1
             right_ineq.append(nutrient_right_ineq_upper)
             right_ineq.append(nutrient_right_ineq_lower)
@@ -77,8 +75,6 @@ class OptModel:
             left_ineq.append(neg_tmp)
 
         # print("left side of ineq", left_ineq)
-        # validation check
-        # print(len(food_info), len(food_info) == len(left_ineq[0]))
 
         # Eqaulity Constraints --> None in our scenario but is a required input for linprog
         tmp = []
@@ -97,25 +93,18 @@ class OptModel:
         # Optimizing objective function with all the constraints (inequalities)
         result = linprog(c=ObjFun, A_ub=left_ineq, b_ub=right_ineq, A_eq=lhs_eq, b_eq=rhs_eq, bounds=bnd,
                          method='highs-ipm')
-
-        # print(result.fun)
-
-        print("success: ", result.success)
-
+        
+        optimized_foods = {}
         if result.success:
             quantities = result.x.tolist()
             for quantity, food in zip(quantities, food_info):
                 if quantity > 0:
                     food_name = food["food_name"]
-                    food_weight = food["food_weight"]
-                    quantity * 100
-                    print(f"{food_name}: {quantity}")
-
-
-        # print("quantities of foods: ", quantities)
-
-        # ListofFoods = [x["food_name"] for x in food_info]
-        # print(ListofFoods)
+                    quantity_grams = quantity * 100
+                    optimized_foods[food_name] = quantity_grams
+                    return optimized_foods
+        else:
+            print("no opt results found")
 
 
 # with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:

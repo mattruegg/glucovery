@@ -133,7 +133,7 @@ class NutrientCalculations:
 
 
     # nutrients = ["Protein", "Carbohydrate"]
-    def get_food_from_nutrients(this, nutrients, dietary_preferences, limit, allergens = ""):
+    def get_food_from_nutrients(this, nutrients, dietary_preferences, allergens = ""):
         """
         returns a list of foods and their nutrients such that atleast one nutrient matches
 
@@ -172,7 +172,7 @@ class NutrientCalculations:
                 {"$unwind": "$nutrients"},
                 {"$group": group_query},
                 { "$project": {"_id" : 0}},
-                {"$limit": limit}
+                # {"$limit": limit}
             ]
 
         q = collection.aggregate(pipeline)
@@ -201,7 +201,7 @@ class NutrientCalculations:
 # missing_nutrients_list = list(missing_nutrients.keys())
 # print("missing nutrients: ", missing_nutrients_list)
 # print("number of missing nutrients: ", len(missing_nutrients))
-# limit_on_rec_foods = 10
+# limit_on_rec_foods = 90
 # # different set of foods can be returned everytime. not necessairly the same everytime
 # # TODO not using how much is missing currently
 # possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, limit_on_rec_foods)
