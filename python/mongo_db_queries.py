@@ -147,16 +147,12 @@ class NutrientCalculations:
         """
         is_vegan = dietary_preferences["is_vegan"]
         is_vegetarian = dietary_preferences["is_vegetarian"]
-
+            
         nutrient_query = {
             # insert multiple nutrients that the user is defficient in
                     "nutrients": {"$elemMatch" : {"nutrient_name": {"$in": nutrients}}}
             }
-
-        # allergens_query = {
-        #     "allergens": {"$elemMatch": {"allergen_name": }}
-        # }
-
+        
         group_query = {
             "_id": "$_id",
             "food_name": {"$first": "$food_name"},
@@ -167,8 +163,30 @@ class NutrientCalculations:
             }
         }
 
+         # allergens
+        allergies = []
+        for i in allergens:
+            if allergens[i]:
+                allergies.append(i)
+
+        allergens_query = {
+            "allergens": {"$elemMatch": {"$and": [{"$in": allergies}, {"$eq": False}]}}
+        }
+
+        # dietary preferences
+        match_query = []
+        match_query.append(nutrient_query)
+        if len(allergies) > 0:
+            match_query.append(allergens_query)
+        if is_vegan or is_vegetarian:
+            if is_vegan:
+                match_query.append({"is_vegan": is_vegan})
+            else:
+                match_query.append({"is_vegetarian": is_vegetarian})
+
+
         pipeline = [
-                {"$match": {"$and": [nutrient_query, {"is_vegan": is_vegan}, {"is_vegetarian": is_vegetarian}, {"allergens": allergens}]}},
+                {"$match": {"$and": match_query}},
                 {"$unwind": "$nutrients"},
                 {"$group": group_query},
                 { "$project": {"_id" : 0}},
@@ -197,14 +215,14 @@ class NutrientCalculations:
 # nutrient_intake = RecommendedNutrientIntake()
 # rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
 # missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
-# dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+# dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
 # allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
 #         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
 # }
 # missing_nutrients_list = list(missing_nutrients.keys())
 # print("missing nutrients: ", missing_nutrients_list)
 # print("number of missing nutrients: ", len(missing_nutrients))
-# limit_on_rec_foods = 90
+# # limit_on_rec_foods = 90
 # # different set of foods can be returned everytime. not necessairly the same everytime
 # # TODO not using how much is missing currently
 # possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)

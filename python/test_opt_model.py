@@ -71,7 +71,8 @@ def get_total_amount(food_name, food_quantity, nutrient_value):
 def main():
     # initalize input
 
-    dietary_preferences = {"is_vegan": True, "is_vegetarian": True}
+
+    dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
     allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
 }
@@ -95,7 +96,7 @@ def main():
                                'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
                                'Calcium, Ca': 1000.0, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
                                'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
-                               'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 45.0, 
+                               'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 47.0, 
                                'Carbohydrate': 130.0, 'Fibre, total dietary': 25.0}
 
 
