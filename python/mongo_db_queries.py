@@ -198,37 +198,81 @@ class NutrientCalculations:
         for obj in q:
             res.append(obj)
         return res
+        
+    def remove_foods(this, possible_foods, list_of_symptoms):
+
+        # df = pd.read_excel("data/symptoms.xlsx", sheet_name="Copy of Bad Foods")
+        # df.to_pickle("data/symptoms.pk1")
+        '''
+        list_of_symptoms: list of names of symptoms user has
+        possible_foods: list of possible foods
+        
+        returns an array of foods that are not bad for symptoms that the user has
+        '''
+        df = pd.read_pickle("data/symptoms.pk1")
+
+        # use the isin() method to create a boolean mask
+        mask = df.isin(list_of_symptoms).any(axis=1)
+
+        # use the boolean mask to remove rows that don't contain those symptoms
+        df = df[mask]
+
+        # add food names to a set
+        food_names = set()
+        for food in possible_foods:
+            food_name = food["food_name"]
+            food_names.add(food_name)
+        
+        # get set of foods to remove from possible foods
+        foods_to_remove = set()
+        for index, row in df.iterrows():
+            # get the values of the columns in the row as a list
+            bad_foods = list(row)[1:]
+            for bad_food in bad_foods:
+                if bad_food in food_names: 
+                    foods_to_remove.add(food_name)
+        
+        good_foods = []
+        for i, food in enumerate(possible_foods):
+            food_name = food["food_name"]
+            if food_name not in foods_to_remove:
+                good_foods.append(food)
+        
+        return good_foods     
 
 
 
-# # create instance of class
-# nutrient_calculations = NutrientCalculations()
-# # searching for foods by name
-# nutrient_calculations.search_food_name("Fuji Apple")
-# # example of foods that user selected that they ate
-# foods_user_ate = {"Fuji Apple": 1, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
-#                   "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
-# foods = nutrient_calculations.find_foods(foods_user_ate)
-# summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
-# user_information = {"sex": "Male", "age": 19}
-# # create an object of the class RecommendedNutientIntake
-# nutrient_intake = RecommendedNutrientIntake()
-# rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
-# missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
-# dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-# allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
-#         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
-# }
-# missing_nutrients_list = list(missing_nutrients.keys())
-# print("missing nutrients: ", missing_nutrients_list)
-# print("number of missing nutrients: ", len(missing_nutrients))
-# # limit_on_rec_foods = 90
-# # different set of foods can be returned everytime. not necessairly the same everytime
-# # TODO not using how much is missing currently
-# possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
-# print("number of possible foods: ", len(possible_foods))
-# # create an object of the class OptModel
+
+# create instance of class
+nutrient_calculations = NutrientCalculations()
+# searching for foods by name
+nutrient_calculations.search_food_name("Fuji Apple")
+# example of foods that user selected that they ate
+foods_user_ate = {"Fuji Apple": 1, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+                  "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
+foods = nutrient_calculations.find_foods(foods_user_ate)
+summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
+user_information = {"sex": "Male", "age": 19}
+# create an object of the class RecommendedNutientIntake
+nutrient_intake = RecommendedNutrientIntake()
+rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
+missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+        "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+}
+missing_nutrients_list = list(missing_nutrients.keys())
+print("missing nutrients: ", missing_nutrients_list)
+print("number of missing nutrients: ", len(missing_nutrients))
+# limit_on_rec_foods = 90
+# different set of foods can be returned everytime. not necessairly the same everytime
+# TODO not using how much is missing currently
+possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
+print("number of possible foods: ", len(possible_foods))
+
+list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+
+# create an object of the class OptModel
 # optimization_model = OptModel()
 # optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
-
-
