@@ -7,23 +7,6 @@ from mongo_db_queries import NutrientCalculations
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
 
-def check_contain_nutrients(possible_foods, missing_nutrients):
-    """
-    returns true if the foods collectively contain the missing nutrients
-    """
-
-    for food in possible_foods:
-        if len(missing_nutrients) == 0:
-            break
-        nutrients = food["nutrients"]
-        for nutrient in nutrients:
-            nutrient_name = nutrient["nutrient_name"]
-            nutrient_value = nutrient["value_100g"]
-            if nutrient_name in missing_nutrients:
-                if nutrient_value > 0:
-                    missing_nutrients.remove(nutrient_name)
-    return len(missing_nutrients) == 0
-
 
 def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake):
     # get food information for foods found in optimized foods
@@ -92,7 +75,7 @@ def main():
     #                            'Fibre, total dietary': 38}
 
     # female
-    summed_nutrient_amounts = {'Iron, Fe': 18.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
+    summed_nutrient_amounts = {'Iron, Fe': 17.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
                                'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
                                'Calcium, Ca': 1000.0, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
                                'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
@@ -109,7 +92,7 @@ def main():
     print("possible foods: ", len(possible_foods))
 
     # check if foods contain all nutrients
-    foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
+    foods_contain_all_nutrients = nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
     if foods_contain_all_nutrients:
         print("foods do contain all nutrients")
         opt_model = OptModel()
