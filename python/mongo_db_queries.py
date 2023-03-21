@@ -248,7 +248,7 @@ nutrient_calculations = NutrientCalculations()
 # searching for foods by name
 nutrient_calculations.search_food_name("Fuji Apple")
 # example of foods that user selected that they ate
-foods_user_ate = {"Fuji Apple": 1, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+foods_user_ate = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
                   "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
 foods = nutrient_calculations.find_foods(foods_user_ate)
 summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
@@ -271,8 +271,9 @@ possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients
 print("number of possible foods: ", len(possible_foods))
 
 list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
-nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-
+good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+print("number of foods after considering symptoms: ", len(good_foods))
 # create an object of the class OptModel
-# optimization_model = OptModel()
-# optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
+optimization_model = OptModel()
+optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+print(optimized_foods)
