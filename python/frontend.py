@@ -28,7 +28,6 @@ async def main(page: ft.Page):
 
     async def choose_persona(e):
         chosen_persona = e.control.data
-        # print(chosen_persona)
         await foods_page(e=any)
 
     #
@@ -49,7 +48,7 @@ async def main(page: ft.Page):
                 ]
             ))
         await page.add_async(lv)
-        await page.add_async(go_to_symptoms)
+        await page.add_async(ft.Row([go_to_symptoms, reset_button]))
         await page.update_async()
 
     # SEND MONGO DB SEARCH AND RETRIEVE FOODS
@@ -99,16 +98,19 @@ async def main(page: ft.Page):
         await page.clean_async()
         await page.add_async(ft.Row([mongo_symptom_search, search_mongo_symptoms_button]))
         await page.add_async(symptom_dropdown)
+        lv = ft.ListView(expand=True, spacing=10)
         for x in chosen_symptoms:
-            await page.add_async(ft.Row(
+            lv.controls.append(ft.Row(
                 [
                     ft.Text(x),
-                    ft.Slider(min=1, max=5, divisions=4,
+                    ft.Slider(min=1, max=3, divisions=2,
                               value=chosen_symptoms[x], label="{value}", data=x, on_change_end=slider_results),
                     ft.ElevatedButton(
                         "X", on_click=remove_chosen_symptom, data=x)
                 ]
             ))
+        await page.add_async(lv)
+        await page.add_async(ft.Row([go_to_symptoms, reset_button]))
         await page.update_async()
 
     # SEND MONGO DB SEARCH AND RETRIEVE SYMPTOMS
@@ -135,7 +137,6 @@ async def main(page: ft.Page):
     # STORE SYMPTOM VALUES
     async def slider_results(e):
         chosen_symptoms[e.control.data] = e.control.value
-        # print(chosen_symptoms)
 
     # REMOVE CHOSEN FOOD
     async def remove_chosen_symptom(e):
@@ -144,10 +145,32 @@ async def main(page: ft.Page):
         await symptoms_page(e)
 
     #
+    # --------------------------------------- RECOMMENDATIONS PAGE ---------------------------------------
+    #
+
+    async def recommendations_page(e):
+        return
+
+    #
+    # --------------------------------------- RESET APPLICATION ---------------------------------------
+    #
+
+    async def reset_application(e):
+        temp = []
+        for y in food_dropdown.options:
+            temp.append(y)
+        for y in temp:
+            food_dropdown.options.remove(y)
+
+        chosen_foods.clear()
+        chosen_symptoms.clear()
+        await personas_page(e=any)
+
+    #
     # --------------------------------------- INITIALIZE VARIABLES ---------------------------------------
     #
 
-    mongo_food_search = ft.TextField()
+    mongo_food_search = ft.TextField(on_submit=search_for_foods)
     search_mongo_foods_button = ft.ElevatedButton(
         "Search", on_click=search_for_foods)
 
@@ -163,6 +186,11 @@ async def main(page: ft.Page):
 
     go_to_symptoms = ft.ElevatedButton(
         "Go To Symptoms", on_click=symptoms_page)
+
+    go_to_recommendations = ft.ElevatedButton(
+        "Go To Recommendations", on_click=recommendations_page)
+
+    reset_button = ft.ElevatedButton("Reset", on_click=reset_application)
 
     # START PROGRAM
     await personas_page(e=any)
