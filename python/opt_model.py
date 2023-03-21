@@ -16,7 +16,8 @@ class OptModel:
         nutrient_consumed_dict: dictionary where key is food name and value is quantity consumed
         food_info: list of dictionaries, where each dictionary is a possible food to recommend
 
-        returns the names and quantities of foods to be recommended to the user
+        returns the names and quantities of foods to be recommended to the user. If no result is found,
+        returns an empty dictionary
         """
 
         right_ineq = []
@@ -98,13 +99,13 @@ class OptModel:
         if result.success:
             quantities = result.x.tolist()
             for quantity, food in zip(quantities, food_info):
-                if quantity > 0:
                     food_name = food["food_name"]
+                    food_weight = food["food_weight"]
                     quantity_grams = quantity * 100
-                    optimized_foods[food_name] = quantity_grams
-                    return optimized_foods
-        else:
-            print("no opt results found")
+                    quantity_units = int(quantity_grams / food_weight)
+                    if quantity_units > 0:
+                        optimized_foods[food_name] = quantity_units
+        return optimized_foods
 
 
 # with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
