@@ -47,6 +47,7 @@ class NutrientCalculations:
 
         return res
 
+
     def find_foods(this, foods):    
         """
         foods: name of food and quantity that user selects
