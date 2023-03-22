@@ -2,12 +2,14 @@ import flet as ft
 import asyncio
 import time
 from mongo_db_queries import NutrientCalculations
+import mongo_db_queries as mdq
 
 
 async def main(page: ft.Page):
     nc = NutrientCalculations()
     chosen_persona = {}
-    chosen_foods = {}
+    chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
+                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10}
     chosen_symptoms = {}
     available_symptoms = {'headache', 'numbness', 'nausea'}
 
@@ -110,7 +112,7 @@ async def main(page: ft.Page):
                 ]
             ))
         await page.add_async(lv)
-        await page.add_async(ft.Row([go_to_symptoms, reset_button]))
+        await page.add_async(ft.Row([go_to_recommendations, reset_button]))
         await page.update_async()
 
     # SEND MONGO DB SEARCH AND RETRIEVE SYMPTOMS
@@ -147,9 +149,15 @@ async def main(page: ft.Page):
     #
     # --------------------------------------- RECOMMENDATIONS PAGE ---------------------------------------
     #
+    async def calc_recs(e):
+        food_recs = mdq.get_food_recs(chosen_foods)
+        print(food_recs)
+        await recommendations_page(food_recs)
 
     async def recommendations_page(e):
-        return
+        await page.clean_async()
+        for x in e:
+            await page.add_async(ft.Text(f"{x}: {e[x]} servings"))
 
     #
     # --------------------------------------- RESET APPLICATION ---------------------------------------
@@ -163,6 +171,8 @@ async def main(page: ft.Page):
             food_dropdown.options.remove(y)
 
         chosen_foods.clear()
+        chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
+                        "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10}
         chosen_symptoms.clear()
         await personas_page(e=any)
 
@@ -188,7 +198,7 @@ async def main(page: ft.Page):
         "Go To Symptoms", on_click=symptoms_page)
 
     go_to_recommendations = ft.ElevatedButton(
-        "Go To Recommendations", on_click=recommendations_page)
+        "Calculate Recommendations", on_click=calc_recs)
 
     reset_button = ft.ElevatedButton("Reset", on_click=reset_application)
 
