@@ -157,27 +157,37 @@ class NutrientCalculations:
             "_id": "$_id",
             "food_name": {"$first": "$food_name"},
             "food_weight": {"$first": "$food_weight"},
+            "is_vegan": {"$first": "$is_vegan"},
+            "is_vegetarian": {"$first": "$is_vegetarian"},
             "nutrients": {
                 "$push": 
                     {"nutrient_name": "$nutrients.nutrient_name", "value_100g": "$nutrients.value_100g", "unit": "$nutrients.unit"}
-            }
+            },
+            # "allergens": {
+            #     "$push": 
+            #         {"nutrient_name": "$nutrients.nutrient_name", "value_100g": "$nutrients.value_100g", "unit": "$nutrients.unit"}
+            # }
         }
 
-         # allergens
-        allergies = []
-        for i in allergens:
-            if allergens[i]:
-                allergies.append(i)
+        #  # allergens
+        # allergies = []
+        # for i in allergens:
+        #     if allergens[i]:
+        #         allergies.append(i)
 
-        allergens_query = {
-            "allergens": {"$elemMatch": {"$and": [{"$in": allergies}, {"$eq": False}]}}
-        }
+        # key = f"allergens.{allergies[0]}"
+
+        # allergens_query = {
+        #     # "allergens": {"$elemMatch": {"$and": [{"$in": allergies}, {"$eq": False}]}}
+        #     key: { "$eq": False}
+
+        # }
 
         # dietary preferences
         match_query = []
         match_query.append(nutrient_query)
-        if len(allergies) > 0:
-            match_query.append(allergens_query)
+        # if len(allergies) > 0:
+        #     match_query.append(allergens_query)
         if is_vegan or is_vegetarian:
             if is_vegan:
                 match_query.append({"is_vegan": is_vegan})

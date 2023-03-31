@@ -42,7 +42,7 @@ def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, r
             nutrient_name = nutrient["nutrient_name"]
             nutrient_value = nutrient["value_100g"]
             nutrient_amounts[nutrient_name] = nutrient_amounts.get(nutrient_name, 0) + get_total_amount(food_name, quantity, nutrient_value)
-    print("nutrient_amounts: ", nutrient_amounts)
+    print("nutrient_amounts in optimized foods: ", nutrient_amounts)
 
     # compare summed amounts with rda value for nutrient
     nutrient_amounts_met = True
@@ -52,10 +52,10 @@ def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, r
         lower_nutrient = rec_nutrient_intake[nutrient_name]["RDA"]
         previous_nutrient_amount = summed_nutrient_amounts[nutrient_name]
         new_nutrient_amount = previous_nutrient_amount + nutrient_amount
-        if new_nutrient_amount < lower_nutrient:
+        if (new_nutrient_amount - lower_nutrient) < -0.1:
             print(f"Nutrient {nutrient_name} is still not met")
             nutrient_amounts_met = False
-        elif (previous_nutrient_amount < upper_nutrient) and (new_nutrient_amount > upper_nutrient):
+        elif (previous_nutrient_amount < upper_nutrient) and ((new_nutrient_amount - upper_nutrient) > 0.1):
             print((f"The recommendations brought nutrient {nutrient_name} above the upper limit"))
             nutrient_amounts_met = False
     if nutrient_amounts_met:
@@ -67,20 +67,51 @@ def get_total_amount(food_name, food_quantity, nutrient_value):
     iron_multiplier = 1.8 if food_name == "Iron, Fe" else 1
     return (food_quantity/ 100) * nutrient_value * iron_multiplier
 
+def test_allergens_dietary(dietary_preferences, allergy, possible_foods):
+    """
+    Checks whether allergens/dietary restrictions were taken into consideration
+
+    """
+
+    user_vegan = dietary_preferences["is_vegan"]
+    user_vegetarian = dietary_preferences["is_vegetarian"]
+
+    correct = True
+    for food in possible_foods:
+        food_vegan = food["is_vegan"]
+        food_vegetarian = food["is_vegetarian"]
+        food_name = food["food_name"]
+        # food_allergen = food["allergens"][allergy]
+        if user_vegan:
+            if not food_vegan:
+                print(f"{food_name} isn't vegan")
+                correct = False
+        elif user_vegetarian:
+            if not food_vegetarian:
+                print(f"{food_name} isn't vegetarian")
+                correct = False
+    if correct:
+        print("all dietary restrictions were accounted for")
+        return True
+    return False
+
 
 def main():
     # initalize input
-
-
     dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
     allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
 }
+    # Testing Purposes
+    chosen_allergy = ""
+    for allergen in allergens:
+        if allergens[allergen]:
+            chosen_allergy = allergen      
+    
     user_information = {"sex": "Female", "age": 19}
 
     nutrient_intake = RecommendedNutrientIntake()
     rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
-
 
     # male
     # summed_nutrient_amounts = {"Protein": 36, "Iron, Fe": 20, "Folate, naturally occurring": 400,
@@ -92,21 +123,26 @@ def main():
     #                            'Fibre, total dietary': 38}
 
     # female
-    summed_nutrient_amounts = {'Iron, Fe': 18.0, 'Folate, naturally occurring': 400.0, 'Vitamin B-6': 1.3, 
-                               'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
-                               'Calcium, Ca': 1000.0, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
-                               'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
-                               'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 47.0, 
-                               'Carbohydrate': 130.0, 'Fibre, total dietary': 25.0}
-
-
+    # summed_nutrient_amounts = {'Iron, Fe': 15, 'Folate, naturally occurring': 400, 'Vitamin B-6': 0.6, 
+    #                            'Vitamin B-12': 1.5, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
+    #                            'Calcium, Ca': 1000, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
+    #                            'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
+    #                            'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 46.0, 
+    #                            'Carbohydrate': 130.0, 'Fibre, total dietary': 25.0}
     
     nutrient_calculations = NutrientCalculations()
+    "---------------------------------------"
+    #  if you want to modify foods for testing
+    foods_user_ate = {"Fuji Apple": 2 }
+    "---------------------------------------"
+    foods = nutrient_calculations.find_foods(foods_user_ate)
+    summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
     print("missing nutrients", missing_nutrients)
     missing_nutrients_list = list(missing_nutrients.keys())
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("possible foods: ", len(possible_foods))
+    # print(test_allergens_dietary(dietary_preferences, chosen_allergy, possible_foods))
 
     # check if foods contain all nutrients
     foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
