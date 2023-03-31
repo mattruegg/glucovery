@@ -102,20 +102,7 @@ class OptModel:
                     food_name = food["food_name"]
                     food_weight = food["food_weight"]
                     quantity_grams = quantity * 100
-                    # quantity_units = int(quantity_grams / food_weight)
+                    # quantity_units = quantity_grams / food_weight
                     if quantity_grams > 0:
                         optimized_foods[food_name] = quantity_grams
         return optimized_foods
-
-
-# with open('OptimizationModel/Nutrient Limits.json', 'r') as json_file:
-#     nutrient_limits = json.load(json_file)
-#     # print("Nutrient Limits Info: ", nutrient_limits)
-
-# with open('OptimizationModel/Nutrients Consumed.json', 'r') as json_file:
-#     nutrient_consumed_dict = json.load(json_file)
-#     # print("Nutrient Consumed Info: ", nutrient_consumed)
-
-# with open('OptimizationModel/foods.json', 'r') as json_file:
-#     food_info = json.load(json_file)
-#     # print("Food Info: ", food_info)
