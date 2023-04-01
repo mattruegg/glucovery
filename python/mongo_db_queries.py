@@ -163,10 +163,7 @@ class NutrientCalculations:
                 "$push": 
                     {"nutrient_name": "$nutrients.nutrient_name", "value_100g": "$nutrients.value_100g", "unit": "$nutrients.unit"}
             },
-            # "allergens": {
-            #     "$push": 
-            #         {"nutrient_name": "$nutrients.nutrient_name", "value_100g": "$nutrients.value_100g", "unit": "$nutrients.unit"}
-            # }
+            "allergens": {"$first": "$allergens"}
         }
 
          # allergens
@@ -198,7 +195,7 @@ class NutrientCalculations:
                 {"$unwind": "$nutrients"},
                 {"$group": group_query},
                 { "$project": {"_id" : 0}},
-                # {"$limit": limit}
+                # {"$limit": 2}
             ]
 
         q = collection.aggregate(pipeline)
@@ -277,14 +274,13 @@ def get_food_recs(foods_user_ate):
     # different set of foods can be returned everytime. not necessairly the same everytime
     # TODO not using how much is missing currently
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
-    print("number of possible foods: ", len(possible_foods))
+    # print("number of possible foods: ", len(possible_foods))
 
-    list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
-    good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-    print("number of foods after considering symptoms: ", len(good_foods))
-    # create an object of the class OptModel
-    optimization_model = OptModel()
-    optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
-    print(optimized_foods)
-    return optimized_foods
-
+    # list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+    # good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+    # print("number of foods after considering symptoms: ", len(good_foods))
+    # # create an object of the class OptModel
+    # optimization_model = OptModel()
+    # optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+    # print(optimized_foods)
+    # return optimized_foods
