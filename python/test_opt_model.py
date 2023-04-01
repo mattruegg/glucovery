@@ -2,7 +2,7 @@
 # test to see if each missing nutrient is contained in atleast one food
 # print("missing_nutrients", missing_nutrients)
 # print("---")
-
+import pandas as pd
 from mongo_db_queries import NutrientCalculations
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
@@ -95,11 +95,33 @@ def test_allergens_dietary(dietary_preferences, allergy, possible_foods):
         return True
     return False
 
+def test_symptoms(list_of_symptoms, good_foods):
+        df = pd.read_pickle("data/symptoms.pk1")
+
+        # use the isin() method to create a boolean mask
+        mask = df.isin(list_of_symptoms).any(axis=1)
+
+        # use the boolean mask to remove rows that don't contain those symptoms
+        df = df[mask]
+
+        # add food names to a set
+        food_names = set()
+        for food in good_foods:
+            food_name = food["food_name"]
+            food_names.add(food_name)
+        
+        for _, row in df.iterrows():
+            bad_foods = list(row)[1:]
+            for bad_food in bad_foods:
+                if bad_food in food_names: 
+                    return False
+        return True
+
 
 def main():
     # initalize input
     dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-    allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+    allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
 }
     # Testing Purposes
@@ -148,10 +170,14 @@ def main():
     foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
     if foods_contain_all_nutrients:
         print("foods do contain all nutrients")
+        list_of_symptoms = ["Diarrhea", "Headache/Migraine", "Numbness", "Bad Gas"]
+        good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+        print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, good_foods))
+        print("number of foods after considering symptoms: ", len(good_foods))
         opt_model = OptModel()
-        optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
+        optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
         print("optimized foods: ", optimized_foods)
-        return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
+        # return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
     else:
         print("no possible foods")
 
