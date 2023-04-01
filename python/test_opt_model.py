@@ -67,7 +67,7 @@ def get_total_amount(food_name, food_quantity, nutrient_value):
     iron_multiplier = 1.8 if food_name == "Iron, Fe" else 1
     return (food_quantity/ 100) * nutrient_value * iron_multiplier
 
-def test_allergens_dietary(dietary_preferences, allergy, possible_foods):
+def test_dietary_restrictions(dietary_preferences,possible_foods):
     """
     Checks whether allergens/dietary restrictions were taken into consideration
 
@@ -91,11 +91,10 @@ def test_allergens_dietary(dietary_preferences, allergy, possible_foods):
                 print(f"{food_name} isn't vegetarian")
                 correct = False
     if correct:
-        print("all dietary restrictions were accounted for")
         return True
     return False
 
-def test_symptoms(list_of_symptoms, good_foods):
+def test_symptoms(list_of_symptoms, possible_foods):
         df = pd.read_pickle("data/symptoms.pk1")
 
         # use the isin() method to create a boolean mask
@@ -106,7 +105,7 @@ def test_symptoms(list_of_symptoms, good_foods):
 
         # add food names to a set
         food_names = set()
-        for food in good_foods:
+        for food in possible_foods:
             food_name = food["food_name"]
             food_names.add(food_name)
         
@@ -116,6 +115,15 @@ def test_symptoms(list_of_symptoms, good_foods):
                 if bad_food in food_names: 
                     return False
         return True
+
+def test_allergies(user_allergy, possible_foods):
+    for food in possible_foods:
+        food_allergens = food["allergens"]
+        for food_allergen, value in food_allergens.items():
+            if food_allergen == user_allergy:
+                if value:
+                    return False
+    return True
 
 
 def main():
@@ -145,20 +153,20 @@ def main():
     #                            'Fibre, total dietary': 38}
 
     # female
-    # summed_nutrient_amounts = {'Iron, Fe': 15, 'Folate, naturally occurring': 400, 'Vitamin B-6': 0.6, 
-    #                            'Vitamin B-12': 1.5, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 8.0, 
-    #                            'Calcium, Ca': 1000, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
-    #                            'Tocopherol, alpha': 15.0, 'Vitamin K': 90.0, 'Potassium, K': 4700.0, 'Phosphorus, P': 700.0, 
-    #                            'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 46.0, 
-    #                            'Carbohydrate': 130.0, 'Fibre, total dietary': 25.0}
+    summed_nutrient_amounts = {'Iron, Fe': 18, 'Folate, naturally occurring': 400, 'Vitamin B-6': 1.3, 
+                               'Vitamin B-12': 2.4, 'Vitamin D': 15.0, 'Copper, Cu': 0.9, 'Zinc, Zn': 2.0, 
+                               'Calcium, Ca': 1000, 'Magnesium, Mg': 310.0, 'Retinol activity equivalents, RAE': 700.0, 
+                               'Tocopherol, alpha': 15.0, 'Vitamin K': 80.0, 'Potassium, K': 4300.0, 'Phosphorus, P': 700.0, 
+                               'Sodium, Na': 1500.0, 'Manganese, Mn': 1.8, 'Selenium, Se': 55.0, 'Protein': 46.0, 
+                               'Carbohydrate': 110.0, 'Fibre, total dietary': 25.0}
     
     nutrient_calculations = NutrientCalculations()
     "---------------------------------------"
     #  if you want to modify foods for testing
-    foods_user_ate = {"Fuji Apple": 2 }
+    # foods_user_ate = {"Fuji Apple": 2 }
     "---------------------------------------"
-    foods = nutrient_calculations.find_foods(foods_user_ate)
-    summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
+    # foods = nutrient_calculations.find_foods(foods_user_ate)
+    # summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
     print("missing nutrients", missing_nutrients)
     missing_nutrients_list = list(missing_nutrients.keys())
@@ -170,13 +178,16 @@ def main():
     foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
     if foods_contain_all_nutrients:
         print("foods do contain all nutrients")
+        print("users dietary restrictions correctly accounted for: ", test_dietary_restrictions(dietary_preferences, possible_foods))
+        print("users allergy correctly accounted for: ", test_allergies(chosen_allergy, possible_foods))
         list_of_symptoms = ["Diarrhea", "Headache/Migraine", "Numbness", "Bad Gas"]
-        good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-        print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, good_foods))
-        print("number of foods after considering symptoms: ", len(good_foods))
+        foods_symptom_filtering = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+        print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, foods_symptom_filtering))
+        print("number of foods after considering symptoms: ", len(foods_symptom_filtering))
+       
         opt_model = OptModel()
-        optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
-        print("optimized foods: ", optimized_foods)
+        # optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+        # print("optimized foods: ", optimized_foods)
         # return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
     else:
         print("no possible foods")
