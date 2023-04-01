@@ -9,7 +9,7 @@ async def main(page: ft.Page):
     nc = NutrientCalculations()
     chosen_persona = {}
     chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
-                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10}
+                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
     chosen_symptoms = {}
     available_symptoms = {'headache', 'numbness', 'nausea'}
 
@@ -83,8 +83,7 @@ async def main(page: ft.Page):
 
     # STORE FOOD QUANTITIES
     async def textbox_results(e):
-        chosen_foods[e.control.label] = e.control.value
-        # print(chosen_foods)
+        chosen_foods[e.control.label] = int(e.control.value)
 
     # REMOVE CHOSEN FOOD
     async def remove_chosen_food(e):
@@ -156,8 +155,12 @@ async def main(page: ft.Page):
 
     async def recommendations_page(e):
         await page.clean_async()
-        for x in e:
-            await page.add_async(ft.Text(f"{x}: {e[x]} servings"))
+        if e:
+            for x in e:
+                await page.add_async(ft.Text(f"{x}: {e[x]} servings"))
+        else:
+            await page.add_async(ft.Text("No suitable combinations of foods found."))
+        await page.add_async(reset_button)
 
     #
     # --------------------------------------- RESET APPLICATION ---------------------------------------
@@ -170,9 +173,10 @@ async def main(page: ft.Page):
         for y in temp:
             food_dropdown.options.remove(y)
 
+        nonlocal chosen_foods
         chosen_foods.clear()
         chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
-                        "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10}
+                        "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
         chosen_symptoms.clear()
         await personas_page(e=any)
 
