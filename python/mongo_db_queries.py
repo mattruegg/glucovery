@@ -121,7 +121,7 @@ class NutrientCalculations:
                 # upper limit that doesn't exist, is recored as "ND" in the intake dataset
                 elif isinstance(up_intake, int) and user_intake > up_intake:
                     # return -1 when nutrient value exceeds upper-limit
-                    pass
+                    return -1
         return missing_nutrients
 
 
@@ -270,6 +270,10 @@ def get_food_recs(foods_user_ate):
     nutrient_intake = RecommendedNutrientIntake()
     rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+    if missing_nutrients == -1:
+        return -1
+    elif len(missing_nutrients) == 0:
+        return -2
     dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
     allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
             "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
@@ -288,7 +292,7 @@ def get_food_recs(foods_user_ate):
         optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
         return optimized_foods
     else:
-        print("foods don't contain nutrients")
+        return -3
 
 # get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
 #                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 })
