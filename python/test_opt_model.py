@@ -7,22 +7,22 @@ from mongo_db_queries import NutrientCalculations
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
 
-def check_contain_nutrients(possible_foods, missing_nutrients):
-    """
-    returns true if the foods collectively contain the missing nutrients
-    """
+# def check_contain_nutrients(possible_foods, missing_nutrients):
+#     """
+#     returns true if the foods collectively contain the missing nutrients
+#     """
 
-    for food in possible_foods:
-        if len(missing_nutrients) == 0:
-            break
-        nutrients = food["nutrients"]
-        for nutrient in nutrients:
-            nutrient_name = nutrient["nutrient_name"]
-            nutrient_value = nutrient["value_100g"]
-            if nutrient_name in missing_nutrients:
-                if nutrient_value > 0:
-                    missing_nutrients.remove(nutrient_name)
-    return len(missing_nutrients) == 0
+#     for food in possible_foods:
+#         if len(missing_nutrients) == 0:
+#             break
+#         nutrients = food["nutrients"]
+#         for nutrient in nutrients:
+#             nutrient_name = nutrient["nutrient_name"]
+#             nutrient_value = nutrient["value_100g"]
+#             if nutrient_name in missing_nutrients:
+#                 if nutrient_value > 0:
+#                     missing_nutrients.remove(nutrient_name)
+#     return len(missing_nutrients) == 0
 
 
 def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake):
@@ -173,7 +173,7 @@ def main():
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("possible foods: ", len(possible_foods))
     # check if foods contain all nutrients
-    foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
+    # foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
     if foods_contain_all_nutrients:
         print("foods do contain all nutrients")
         print("users dietary restrictions correctly accounted for: ", test_dietary_restrictions(dietary_preferences, possible_foods))
