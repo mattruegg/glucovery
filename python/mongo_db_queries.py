@@ -235,6 +235,23 @@ class NutrientCalculations:
         
         return good_foods     
 
+    def check_contain_nutrients(this, possible_foods, missing_nutrients):
+        """
+        returns true if the foods collectively contain the missing nutrients
+        """
+
+        for food in possible_foods:
+            if len(missing_nutrients) == 0:
+                break
+            nutrients = food["nutrients"]
+            for nutrient in nutrients:
+                nutrient_name = nutrient["nutrient_name"]
+                nutrient_value = nutrient["value_100g"]
+                if nutrient_name in missing_nutrients:
+                    if nutrient_value > 0:
+                        missing_nutrients.remove(nutrient_name)
+        return len(missing_nutrients) == 0
+
 
 
 def get_food_recs(foods_user_ate):
@@ -262,13 +279,16 @@ def get_food_recs(foods_user_ate):
     print("number of missing nutrients: ", len(missing_nutrients))
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("number of possible foods: ", len(possible_foods))
-    list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
-    good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-    print("number of foods after considering symptoms: ", len(good_foods))
-    # create an object of the class OptModel
-    optimization_model = OptModel()
-    optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
-    return optimized_foods
+    if nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy()):
+        list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+        good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+        print("number of foods after considering symptoms: ", len(good_foods))
+        # create an object of the class OptModel
+        optimization_model = OptModel()
+        optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+        return optimized_foods
+    else:
+        print("foods don't contain nutrients")
 
 # get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
 #                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 })
