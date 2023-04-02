@@ -19,21 +19,19 @@ class NutrientCalculations:
 
     # note: no sorting on score capability with fuzzy match
     # TODO - can we easily flag an incoming food as unsafe (allergies, contains gluten)
-    def search_food_name(this, search_query, limit = 5):
+    def search_food_name(this, search_query):
         """
-        returns the nutrition information for foods in a users diet
+        returns the food name for matching food searches
 
         search query: search query made by user
-        limit: number of search results to return that match
-        get_nutrients: True if we want to return nutrients else False
 
-        return: list of dictionaries. each dictionary contains food_weight and nutrients list.
+        return: list of dictionaries. each dictionary contains food name.
 
         """
     # pipeline - for each space seperated term, matches any substring with 1 character variation
     # autocomplete searches substrings as opposed to the whole word
 
-        projection = {"_id": 0, "food_name": 1, "food_weight": 1, "nutrients": 1}
+        projection = {"_id": 0, "food_name": 1}
 
         pipeline = [
             {
@@ -43,19 +41,13 @@ class NutrientCalculations:
                         "autocomplete": {"query": search_query, "path": "food_name", "fuzzy": {"maxEdits": 1}} 
                     }
             },
-
-            {"$limit": limit},
             {
                 "$project": projection
             },
         ]
 
-        # start_time = time.time()
         result = collection.aggregate(pipeline)
-        # print("--- %s seconds ---" % (time.time() - start_time))
-        # explain_output = db.command('aggregate', 'glucovery-collection', pipeline=pipeline, explain=True)
-        
-        # # print results
+       
         res = []
         for i in result:
             res.append(i)
@@ -127,8 +119,9 @@ class NutrientCalculations:
                 if user_intake < rec_intake:
                     missing_nutrients[nutrient] = rec_intake - user_intake
                 # upper limit that doesn't exist, is recored as "ND" in the intake dataset
-                elif type(up_intake) in ("int", "float") and user_intake > up_intake:
-                    raise Exception(f"User's {nutrient} intake exceeds upper limit")
+                elif isinstance(up_intake, int) and user_intake > up_intake:
+                    # return -1 when nutrient value exceeds upper-limit
+                    pass
         return missing_nutrients
 
 
@@ -139,7 +132,6 @@ class NutrientCalculations:
 
         nutrients: list of nutrients that are missing from user's diet
         dietary_preferences: dictionary of dietary_preferences for a user
-        limit: limit on results returned
         allergies: list of allergens for a user
 
         return: list of dictionaries. each dictionary contains food_name, food_weight, and nutrients list.
@@ -206,8 +198,6 @@ class NutrientCalculations:
         
     def remove_foods(this, possible_foods, list_of_symptoms):
 
-        # df = pd.read_excel("data/symptoms.xlsx", sheet_name="Copy of Bad Foods")
-        # df.to_pickle("data/symptoms.pk1")
         '''
         list_of_symptoms: list of names of symptoms user has
         possible_foods: list of possible foods
@@ -251,7 +241,7 @@ def get_food_recs(foods_user_ate):
     # create instance of class
     nutrient_calculations = NutrientCalculations()
     # searching for foods by name
-    # nutrient_calculations.search_food_name("Fuji Apple")
+    nutrient_calculations.search_food_name("Fuji Apple")
     
     # example of foods that user selected that they ate
     # foods_user_ate = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
@@ -270,17 +260,15 @@ def get_food_recs(foods_user_ate):
     missing_nutrients_list = list(missing_nutrients.keys())
     print("missing nutrients: ", missing_nutrients_list)
     print("number of missing nutrients: ", len(missing_nutrients))
-    # limit_on_rec_foods = 90
-    # different set of foods can be returned everytime. not necessairly the same everytime
-    # TODO not using how much is missing currently
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
-    # print("number of possible foods: ", len(possible_foods))
+    print("number of possible foods: ", len(possible_foods))
+    list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+    good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+    print("number of foods after considering symptoms: ", len(good_foods))
+    # create an object of the class OptModel
+    optimization_model = OptModel()
+    optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+    return optimized_foods
 
-    # list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
-    # good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-    # print("number of foods after considering symptoms: ", len(good_foods))
-    # # create an object of the class OptModel
-    # optimization_model = OptModel()
-    # optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
-    # print(optimized_foods)
-    # return optimized_foods
+# get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+#                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 })
