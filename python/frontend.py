@@ -155,11 +155,17 @@ async def main(page: ft.Page):
 
     async def recommendations_page(e):
         await page.clean_async()
-        if e:
+        if e == -1:
+            await page.add_async(ft.Text("At least one nutrient in your diet exceeds the daily allowance upper limit."))
+        elif e == -2:
+            await page.add_async(ft.Text("You have met the RDA for all nutrients in your diet."))
+        elif e == -3:
+            await page.add_async(ft.Text("Foods in database do not contain the nutrients you are deficient in."))
+        elif len(e) == 0:
+            await page.add_async(ft.Text("Recommendation model could not find a suitable set of foods."))
+        else:
             for x in e:
                 await page.add_async(ft.Text(f"{x}: {e[x]} servings"))
-        else:
-            await page.add_async(ft.Text("No suitable combinations of foods found."))
         await page.add_async(reset_button)
 
     #
