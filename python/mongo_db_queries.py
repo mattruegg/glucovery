@@ -250,31 +250,28 @@ class NutrientCalculations:
                         missing_nutrients.remove(nutrient_name)
         return len(missing_nutrients) == 0
 
-
-
 def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allergens):
+    user_information = {"sex": "Male", "age": 19}
     # create instance of class
     nutrient_calculations = NutrientCalculations()
     # searching for foods by name
     nutrient_calculations.search_food_name("Fuji Apple")
     foods = nutrient_calculations.find_foods(foods_user_ate)
     summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
-    user_information = {"sex": "Male", "age": 19}
     # create an object of the class RecommendedNutientIntake
     nutrient_intake = RecommendedNutrientIntake()
     rec_nutrient_intake = nutrient_intake.get_nutrient_intake(user_information)
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
+    print("missing nutrients: ", missing_nutrients)
     if missing_nutrients == -1:
         return -1
     elif len(missing_nutrients) == 0:
         return -2
     missing_nutrients_list = list(missing_nutrients.keys())
-    print("missing nutrients: ", missing_nutrients_list)
-    print("number of missing nutrients: ", len(missing_nutrients))
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("number of possible foods: ", len(possible_foods))
-    if nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy()):
-        # list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+    foods_contain_all_nutrients = nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
+    if foods_contain_all_nutrients:
         if len(list_of_symptoms) > 0:
             possible_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
         print("number of foods after considering symptoms: ", len(possible_foods))
@@ -285,12 +282,14 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
     else:
         return -3
 
-# print(get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
-#                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }, [],
-#                           {"is_vegan": False, "is_vegetarian": False},
-#                            allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
-#             "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
-#     }
+foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+                    "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
+list_of_symptoms = []
+dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+            "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+            }
 
 
-#   ))
+food_recs = get_food_recs(foods, list_of_symptoms, dietary_preferences, allergens)
+print(food_recs)

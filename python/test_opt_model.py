@@ -173,17 +173,18 @@ def main():
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("possible foods: ", len(possible_foods))
     # check if foods contain all nutrients
-    # foods_contain_all_nutrients = check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
+    foods_contain_all_nutrients = nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy())
     if foods_contain_all_nutrients:
         print("foods do contain all nutrients")
         print("users dietary restrictions correctly accounted for: ", test_dietary_restrictions(dietary_preferences, possible_foods))
         print("users allergy correctly accounted for: ", test_allergies(chosen_allergy, possible_foods))
         list_of_symptoms = ["Diarrhea", "Headache/Migraine", "Numbness", "Bad Gas"]
-        foods_symptom_filtering = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-        print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, foods_symptom_filtering))
-        print("number of foods after considering symptoms: ", len(foods_symptom_filtering))
+        if len(list_of_symptoms) > 0:
+            possible_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+            print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, possible_foods))
+        print("number of foods after considering symptoms: ", len(possible_foods))
         opt_model = OptModel()
-        optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, foods_symptom_filtering)
+        optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
         print("optimized foods: ", optimized_foods)
         return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
     else:
