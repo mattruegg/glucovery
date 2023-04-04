@@ -164,16 +164,14 @@ class NutrientCalculations:
             if allergens[i]:
                 allergies.append(i)
 
-        key = f"allergens.{allergies[0]}"
-
-        allergens_query = {
-            key: { "$eq": False}
-        }
-
         # dietary preferences
         match_query = []
         match_query.append(nutrient_query)
         if len(allergies) > 0:
+            key = f"allergens.{allergies[0]}"
+            allergens_query = {
+                key: { "$eq": False}
+            }
             match_query.append(allergens_query)
         if is_vegan or is_vegetarian:
             if is_vegan:
@@ -259,10 +257,6 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
     nutrient_calculations = NutrientCalculations()
     # searching for foods by name
     nutrient_calculations.search_food_name("Fuji Apple")
-    
-    # example of foods that user selected that they ate
-    # foods_user_ate = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
-    #                 "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
     foods = nutrient_calculations.find_foods(foods_user_ate)
     summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
     user_information = {"sex": "Male", "age": 19}
@@ -274,10 +268,6 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
         return -1
     elif len(missing_nutrients) == 0:
         return -2
-    # dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-    # allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
-    #         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
-    # }
     missing_nutrients_list = list(missing_nutrients.keys())
     print("missing nutrients: ", missing_nutrients_list)
     print("number of missing nutrients: ", len(missing_nutrients))
@@ -285,14 +275,22 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
     print("number of possible foods: ", len(possible_foods))
     if nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy()):
         # list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
-        good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
-        print("number of foods after considering symptoms: ", len(good_foods))
+        if len(list_of_symptoms) > 0:
+            possible_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
+        print("number of foods after considering symptoms: ", len(possible_foods))
         # create an object of the class OptModel
         optimization_model = OptModel()
-        optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, good_foods)
+        optimized_foods = optimization_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
         return optimized_foods
     else:
         return -3
 
-# get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
-#                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 })
+# print(get_food_recs({"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
+#                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }, [],
+#                           {"is_vegan": False, "is_vegetarian": False},
+#                            allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+#             "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+#     }
+
+
+#   ))

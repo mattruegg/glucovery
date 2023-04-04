@@ -102,7 +102,8 @@ class OptModel:
                     food_name = food["food_name"]
                     food_weight = food["food_weight"]
                     quantity_grams = quantity * 100
-                    # quantity_units = quantity_grams / food_weight
-                    if quantity_grams > 0:
-                        optimized_foods[food_name] = quantity_grams
+                    quantity_units = quantity_grams / food_weight
+                    if quantity_units > 0:
+                        rounded_quantity_units = round(quantity_units, 2)
+                        optimized_foods[food_name] = rounded_quantity_units
         return optimized_foods
