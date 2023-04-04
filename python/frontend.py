@@ -61,7 +61,7 @@ async def main(page: ft.Page):
             list_of_symptoms = []
             dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
             allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, 
-                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": True, 
+                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": False, 
                          "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False}
             chosen_foods = {}
         await foods_page(e=any)
@@ -184,6 +184,9 @@ async def main(page: ft.Page):
     # --------------------------------------- RECOMMENDATIONS PAGE ---------------------------------------
     #
     async def calc_recs(e):
+        if len(chosen_foods) == 0:
+            await recommendations_page(-4)
+            return
         food_recs = mdq.get_food_recs(chosen_foods, list_of_symptoms, dietary_preferences, allergens)
         print(food_recs)
         await recommendations_page(food_recs)
@@ -196,11 +199,13 @@ async def main(page: ft.Page):
             await page.add_async(ft.Text("You have met the RDA for all nutrients in your diet."))
         elif e == -3:
             await page.add_async(ft.Text("Foods in database do not contain the nutrients you are deficient in."))
+        elif e == -4:
+            await page.add_async(ft.Text("Please enter a food."))
         elif len(e) == 0:
             await page.add_async(ft.Text("Recommendation model could not find a suitable set of foods."))
         else:
             for x in e:
-                await page.add_async(ft.Text(f"{x}: {math.floor(e[x])} servings"))
+                await page.add_async(ft.Text(f"{x}: {(e[x])} servings"))
         await page.add_async(reset_button)
 
     #
