@@ -121,7 +121,8 @@ class NutrientCalculations:
                 # upper limit that doesn't exist, is recored as "ND" in the intake dataset
                 elif isinstance(up_intake, int) and user_intake > up_intake:
                     # return -1 when nutrient value exceeds upper-limit
-                    return -1
+                    # return -1
+                    pass
         return missing_nutrients
 
 
@@ -306,3 +307,10 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
 #                             'Fibre, total dietary': 38}
 #     missing_nutrients_list = ['Abdonimal Pain', 'Fatigue', 'Diarrhea', 'Constiaption', 'Vomitting', 'Nausea', 'Brain Fog/Mood Swing', 'Numbness', 'Skin Issues', 'Headache/Migraine', 'Joint Pain', 
 # #  'Inflammation', 'Bloating', 'Bowel movements that are oily and float', 'Low Appetite ', 'Bad Gas', 'Lactose Sensitivity']
+
+# q = collection.find({}, {"_id": 0, "food_name": 1})
+# res = []
+# for obj in q:
+#     res.append(obj["food_name"])
+# print(res)
+

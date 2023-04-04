@@ -6,7 +6,7 @@ import pandas as pd
 from mongo_db_queries import NutrientCalculations
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
-
+import random
 # def check_contain_nutrients(possible_foods, missing_nutrients):
 #     """
 #     returns true if the foods collectively contain the missing nutrients
@@ -127,11 +127,58 @@ def test_allergies(user_allergy, possible_foods):
 
 
 def main():
+    all_foods = ['Fuji Apple', 'Gala Apple', 'Asian Pear', 'Bartlett Pear', 'Kiwi', 
+     'Watermelon', 'Banana', 'White Grapefruit', 'Guava Strawberry', 'Peach', 'Apricot', 'Orange', 
+     'Lime', 'Plum', 'Tangerine', 'Mango', 'Raspberry', 'Poached Egg', 'Fried Egg', 
+     'Scrambled Egg/Omelet', 'Hard Boiled Egg', 'Sliced Mozzarella Cheese', 'Sliced Cheddar Cheese', 
+     'Cup of 2% White Milk', 'Cup of 2% Chocolate Milk', 'Greek Yogurt', 'Baby Carrot', 'Carrot', 
+     'Tomato', 'Salmon', 'Peanut Butter, Natural', 'Peanut Butter', 'Chicken Breast', 
+     'Chicken Thigh', 'Ground Beef', 'Beef Tenderloin', 'Pork Chop, Sirloin', 'Slice of Bacon, Pork', 
+     'Pork Tenderloin', 'Can of White Tuna', 'Tuna Fillet, Skipjack', 'Shrimp', 
+     'Turkey, Dark Meat', 'Turkey, Light Meat', 'Cooked Lentils, 1 Cup', 
+     'Chickpeas, 1 Cup Boiled', 'Black Beans, 1 Cup Boiled', 
+     'Kidney Beans, 1 Cup Boiled', 'Tofu, Raw', 'Roasted Peanuts, Handful', 
+     'Roasted Almonds, Handful', 'Slice of Rice Bran Bread', 
+     'Cup of Cooked Quinoa', 'Packet of Oatmeal', 'Serving of Sorghum', 'Cup of Buckwheat', 
+     'Salted Buckwheat Rice Cake', 'Serving of Cornmeal', 'Serving of Millet Rice', 
+     'Cup of Millet', 'Cup of Cream of Rice', 'Cup of Sticky White Rice', 'Cup of Brown Rice', 
+     'Cup of Wild Rice', 'Cup of White Rice', 'Single Brown Rice Multigrain Rice Cake', 
+     'Cup of Teff', 'Half Cup of Tapioca Pearls', 'Half Cup of Chia Seeds', 'Cup of Rice Noodles', 'Cup of Brown Rice Crisps', 'Cup of Crispy Rice Cereal', 'Serving of White Rice Flour', 
+     'Serving of Brown Rice Flour', 'Cup of Corn Grits', 'Cup of Amaranth', 'Cucumber', '1 Leaf of Romaine Lettuce', '1 Leaf of Iceberg Lettuce', 'Frozen Peas', 'Frozen Corn', 'Broccoli Stalk, Raw', 'Broccoli Stalk, Boiled', 'Zucchini, Boiled', 'Green Bell Pepper, Raw', 'Red Bell Pepper, Raw', 'Yellow Bell Pepper, Raw', 'Baked Potato', 'Mashed Potatoes', 'Store-bought French Fries']
+    all_symptoms = ['Abdonimal Pain', 'Fatigue', 'Diarrhea', 'Constiaption', 'Vomitting', 'Nausea',
+ 'Brain Fog/Mood Swing', 'Numbness', 'Skin Issues', 'Headache/Migraine', 'Joint Pain', 'Inflammation', 'Bloating', 'Bowel movements that are oily and float', 
+ 'Low Appetite ', 'Bad Gas', 'Lactose Sensitivity']
+
+    # randomly select test paramaters
+    foods_user_ate = {}
+    count_foods = random.randint(0, 15)
+    count_symptoms = random.randint(0, len(all_symptoms))
+    count = 0
+    while count != count_foods:
+        food = random.choice(all_foods)
+        if food not in foods_user_ate:
+            quantity_food = random.randint(0, 5)
+            foods_user_ate[food] = quantity_food
+            count += 1
+    count = 0
+    list_of_symptoms = []
+    while count != count_symptoms:
+        symptom = random.choice(all_symptoms)
+        if symptom not in list_of_symptoms:
+            list_of_symptoms.append(symptom)
+            count += 1
+
+    print("foods user ate: ", foods_user_ate)
+    print("symptoms",  list_of_symptoms)
+    foods_user_ate = {"Fuji Apple": 2}
+    list_of_symptoms = ["Fatigue"]
+
     # initalize input
     dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-    allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+    allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
 }
+
     # Testing Purposes
     chosen_allergy = ""
     for allergen in allergens:
@@ -161,10 +208,6 @@ def main():
     #                            'Carbohydrate': 110.0, 'Fibre, total dietary': 25.0}
     
     nutrient_calculations = NutrientCalculations()
-    "---------------------------------------"
-    #  if you want to modify foods for testing
-    foods_user_ate = {"Fuji Apple": 2 }
-    "---------------------------------------"
     foods = nutrient_calculations.find_foods(foods_user_ate)
     summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
     missing_nutrients = nutrient_calculations.determine_missing_nutrient_amounts(summed_nutrient_amounts, rec_nutrient_intake)
@@ -178,7 +221,6 @@ def main():
         print("foods do contain all nutrients")
         print("users dietary restrictions correctly accounted for: ", test_dietary_restrictions(dietary_preferences, possible_foods))
         print("users allergy correctly accounted for: ", test_allergies(chosen_allergy, possible_foods))
-        list_of_symptoms = ["Diarrhea", "Headache/Migraine", "Numbness", "Bad Gas"]
         if len(list_of_symptoms) > 0:
             possible_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
             print("users symptoms correctly accounted for:", test_symptoms(list_of_symptoms, possible_foods))
