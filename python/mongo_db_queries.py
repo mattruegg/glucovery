@@ -255,7 +255,6 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
     # create instance of class
     nutrient_calculations = NutrientCalculations()
     # searching for foods by name
-    nutrient_calculations.search_food_name("Fuji Apple")
     foods = nutrient_calculations.find_foods(foods_user_ate)
     summed_nutrient_amounts = nutrient_calculations.sum_nutrient_values(foods, foods_user_ate)
     # create an object of the class RecommendedNutientIntake

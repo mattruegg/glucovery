@@ -20,7 +20,9 @@ async def main(page: ft.Page):
     allergens = {}
 
     profiles_text = ["Profile 1: Sulphite allergy, Vegetarian, Joint Pain and Inflammation",
-                      "Profile 2: Egg allergy, Diarrhea and Migraines", "Profile 3: Blank"]
+                      "Profile 2: Egg allergy, Diarrhea and Migraines", 
+                      "Profile 3: Meeting all nutrient requirements", 
+                      "Profile 4: Blank"]
 
     #
     # --------------------------------------- PERSONAS PAGE ---------------------------------------
@@ -28,7 +30,8 @@ async def main(page: ft.Page):
 
     async def personas_page(e):
         await page.clean_async()
-        for x in range(3):
+        await page.add_async(ft.Row([ft.Text("All profiles: Male, 19 years old")]))
+        for x in range(4):
             profile = ft.Text(profiles_text[x])
             profile_button = ft.ElevatedButton(
                 "Select", on_click=choose_persona, data=x)
@@ -56,8 +59,17 @@ async def main(page: ft.Page):
                          "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": False, 
                          "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False}
             chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
-                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
+                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10}
         elif e.control.data == 2:
+            list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+            dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+            allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, 
+                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": False, 
+                         "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False}
+            chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
+                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, 
+                    "Salmon": 2, "Slice of Bacon, Pork": 7, "1 Leaf of Romaine Lettuce": 4}
+        elif e.control.data == 3:
             list_of_symptoms = []
             dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
             allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, 
