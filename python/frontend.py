@@ -1,6 +1,5 @@
 import flet as ft
-import asyncio
-import time
+import math
 from mongo_db_queries import NutrientCalculations
 import mongo_db_queries as mdq
 
@@ -8,13 +7,20 @@ import mongo_db_queries as mdq
 async def main(page: ft.Page):
     nc = NutrientCalculations()
     chosen_persona = {}
-    chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
-                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
     chosen_symptoms = {}
     available_symptoms = {'headache', 'numbness', 'nausea'}
 
+    chosen_foods = {}
+
     personas = [{'sex': 'Male', 'age': '28'}, {'sex': 'Female', 'age': '37'}, {
         'sex': 'Female', 'age': '49'}, {'sex': 'Male', 'age': '62'}]
+    
+    list_of_symptoms = []
+    dietary_preferences = {}
+    allergens = {}
+
+    profiles_text = ["Profile 1: Sulphite allergy, Vegetarian, Joint Pain and Inflammation",
+                      "Profile 2: Egg allergy, Diarrhea and Migraines", "Profile 3: Blank"]
 
     #
     # --------------------------------------- PERSONAS PAGE ---------------------------------------
@@ -22,14 +28,42 @@ async def main(page: ft.Page):
 
     async def personas_page(e):
         await page.clean_async()
-        for x in personas:
-            profile = ft.Text(f"Sex: {x['sex']}, Age: {x['age']}")
+        for x in range(3):
+            profile = ft.Text(profiles_text[x])
             profile_button = ft.ElevatedButton(
                 "Select", on_click=choose_persona, data=x)
             await page.add_async(ft.Row([profile, profile_button]))
 
     async def choose_persona(e):
-        chosen_persona = e.control.data
+        
+        nonlocal list_of_symptoms
+        nonlocal dietary_preferences
+        nonlocal allergens
+        nonlocal chosen_foods
+
+        if e.control.data == 0:
+            list_of_symptoms = ["Joint Pain", "Inflammation"]
+            dietary_preferences = {"is_vegan": False, "is_vegetarian": True}
+            allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, 
+                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": False, 
+                         "Soy": False, "Sulphites": True, "Tree Nuts": False, "Wheat and triticale": False}
+            chosen_foods = {"Cooked Lentils, 1 Cup": 1.5, "Poached Egg": 3, "Sliced Cheddar Cheese": 2, 
+                            "Fuji Apple": 2, "Cup of 2% White Milk": 2, "Dried Lychee": 3}
+        elif e.control.data == 1:
+            list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+            dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+            allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, 
+                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": False, 
+                         "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False}
+            chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
+                    "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
+        elif e.control.data == 2:
+            list_of_symptoms = []
+            dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+            allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, 
+                         "Crustaceans and molluscs": False,"Fish": False, "Sesame seeds": True, 
+                         "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False}
+            chosen_foods = {}
         await foods_page(e=any)
 
     #
@@ -37,6 +71,7 @@ async def main(page: ft.Page):
     #
 
     async def foods_page(e):
+        nonlocal chosen_foods
         await page.clean_async()
         await page.add_async(ft.Row([mongo_food_search, search_mongo_foods_button]))
         await page.add_async(food_dropdown)
@@ -50,7 +85,7 @@ async def main(page: ft.Page):
                 ]
             ))
         await page.add_async(lv)
-        await page.add_async(ft.Row([go_to_symptoms, reset_button]))
+        await page.add_async(ft.Row([go_to_recommendations, reset_button]))
         await page.update_async()
 
     # SEND MONGO DB SEARCH AND RETRIEVE FOODS
@@ -149,7 +184,7 @@ async def main(page: ft.Page):
     # --------------------------------------- RECOMMENDATIONS PAGE ---------------------------------------
     #
     async def calc_recs(e):
-        food_recs = mdq.get_food_recs(chosen_foods)
+        food_recs = mdq.get_food_recs(chosen_foods, list_of_symptoms, dietary_preferences, allergens)
         print(food_recs)
         await recommendations_page(food_recs)
 
@@ -165,7 +200,7 @@ async def main(page: ft.Page):
             await page.add_async(ft.Text("Recommendation model could not find a suitable set of foods."))
         else:
             for x in e:
-                await page.add_async(ft.Text(f"{x}: {e[x]} servings"))
+                await page.add_async(ft.Text(f"{x}: {math.floor(e[x])} servings"))
         await page.add_async(reset_button)
 
     #
@@ -179,11 +214,16 @@ async def main(page: ft.Page):
         for y in temp:
             food_dropdown.options.remove(y)
 
+        nonlocal list_of_symptoms
+        nonlocal dietary_preferences
+        nonlocal allergens
         nonlocal chosen_foods
+
+        list_of_symptoms.clear()
+        dietary_preferences.clear()
+        allergens.clear()
         chosen_foods.clear()
-        chosen_foods = {"Fuji Apple": 2, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5,
-                        "Cup of 2% White Milk": 2, "Tomato": 5, "Peanut Butter, Natural": 10, "Salmon": 10}
-        chosen_symptoms.clear()
+        
         await personas_page(e=any)
 
     #

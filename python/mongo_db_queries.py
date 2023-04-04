@@ -254,7 +254,7 @@ class NutrientCalculations:
 
 
 
-def get_food_recs(foods_user_ate):
+def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allergens):
     # create instance of class
     nutrient_calculations = NutrientCalculations()
     # searching for foods by name
@@ -274,17 +274,17 @@ def get_food_recs(foods_user_ate):
         return -1
     elif len(missing_nutrients) == 0:
         return -2
-    dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-    allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
-            "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
-    }
+    # dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
+    # allergens = {"Eggs": True, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
+    #         "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
+    # }
     missing_nutrients_list = list(missing_nutrients.keys())
     print("missing nutrients: ", missing_nutrients_list)
     print("number of missing nutrients: ", len(missing_nutrients))
     possible_foods = nutrient_calculations.get_food_from_nutrients(missing_nutrients_list, dietary_preferences, allergens)
     print("number of possible foods: ", len(possible_foods))
     if nutrient_calculations.check_contain_nutrients(possible_foods, missing_nutrients_list.copy()):
-        list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
+        # list_of_symptoms = ["Diarrhea", "Headache/Migraine"]
         good_foods = nutrient_calculations.remove_foods(possible_foods, list_of_symptoms)
         print("number of foods after considering symptoms: ", len(good_foods))
         # create an object of the class OptModel
