@@ -8,7 +8,7 @@ As such, our project aims to provide foods that can help reduce the symptoms Cel
 
 ## Designed Solution
 
-### Wireframe
+### Wireframes
 One component of our solution is a series of wireframes that demonstrate what information our application would show to the user and how the user can interact with the application. Try it out [here](https://www.figma.com/proto/ZlgOy12Jee6zj6PC6rtWtB/Wireframes?node-id=317-271&viewport=1364%2C1350%2C0.25&scaling=scale-down&starting-point-node-id=317%3A271&show-proto-sidebar=1&fbclid=IwAR3KQ3ZsqszI348nvOq44M7mknu9Igq6eosRAcCRjlV-GgpJvfVOxlb29do)
 
 ### Web Application
@@ -20,6 +20,6 @@ To use our application, users input their daily food consumption and symptoms. O
 - Clone this repository
 - Install Python
 - At the root level where `requirements.txt` is located, run the command `pip install -r requirements.txt` to install any dependencies
-- In the `src` folder, execute the command `python frontend.py` in the terminal to run the flutter application or run the `frontend.py` file 
+- In the `src` folder, execute the command `python frontend.py` in the terminal to run the flutter application or run the `frontend.py` file
 
 
