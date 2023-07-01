@@ -8,12 +8,18 @@ As such, our project aims to provide foods that can help reduce the symptoms Cel
 
 ## Designed Solution
 
-# Wireframe
-One component of our solution is a series of wireframes that demonstrate what information our application would show to the user and how the user can interact with the application. This can be viewed here: 
+### Wireframe
+One component of our solution is a series of wireframes that demonstrate what information our application would show to the user and how the user can interact with the application. Try it out [here](https://www.figma.com/proto/ZlgOy12Jee6zj6PC6rtWtB/Wireframes?node-id=317-271&viewport=1364%2C1350%2C0.25&scaling=scale-down&starting-point-node-id=317%3A271&show-proto-sidebar=1&fbclid=IwAR3KQ3ZsqszI348nvOq44M7mknu9Igq6eosRAcCRjlV-GgpJvfVOxlb29do)
 
-# Web Application
- The web application recommends gluten-free foods to users based on their current diet and recovery symptoms. The application stores a database of over 100 gluten-free foods on the cloud using MongoDB Atlas. Nutritional information, serving size, allergens, and dietary restrictions are stored for each food. Users input their daily food consumption, and the application calculates nutrient consumption by summing up the nutrients from the selected foods. The application compares the consumed nutrients to the recommended daily allowance (RDA) and upper limit (UL) based on the user's age and sex. The application then determines a list of possible foods based on the missing nutrients, dietary restrictions, allergies, and symptoms. Finally, an optimization model minimizes the number of foods recommended to the user and determines the food servings such that its constraints are met. Tests are performed to ensure the correctness of the algorithms.
+### Web Application
+The second component of our solution is a Python web application that recommends gluten-free foods to users based on their current diet and symptoms during recovery from a GFU. The application uses Flutter for the frontend and MongoDB Atlas as a database and search engine. The database stores over 100 gluten-free foods and includes information such as their nutritional breakdown, serving size, allergens, and dietary restrictions. 
 
-# How to Run
+To use our application, users input their daily food consumption and symptoms. Our algorithm then takes this into account, as well as the user's recommended daily nutrient intake, allergies, and dietary restrictions, to generate a list of foods for the following day that help prevent the user from developing a nutrient deficiency. Finally, an optimization model minimizes the number of unique foods recommended to the user and determines the number of servings that contain the right amount of nutrients that are missing from the user's diet.
+
+#### How to Run
+- Clone this repository
+- Install Python
+- At the root level where `requirements.txt` is located, run the command `pip install -r requirements.txt` to install any dependencies
+- In the `src` folder, execute the command `python frontend.py` in the terminal to run the flutter application or run the `frontend.py` file 
 
 
