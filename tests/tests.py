@@ -1,32 +1,13 @@
-# test to see if missing nutrients, summed_nutrient_amounts, rec_intake is same on each run (true)
-# test to see if each missing nutrient is contained in atleast one food
-# print("missing_nutrients", missing_nutrients)
-# print("---")
 import pandas as pd
-from mongo_db_queries import NutrientCalculations
+import sys
+sys.path.append("src")
+
+from food_queries import NutrientCalculations
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
 
-# def check_contain_nutrients(possible_foods, missing_nutrients):
-#     """
-#     returns true if the foods collectively contain the missing nutrients
-#     """
-
-#     for food in possible_foods:
-#         if len(missing_nutrients) == 0:
-#             break
-#         nutrients = food["nutrients"]
-#         for nutrient in nutrients:
-#             nutrient_name = nutrient["nutrient_name"]
-#             nutrient_value = nutrient["value_100g"]
-#             if nutrient_name in missing_nutrients:
-#                 if nutrient_value > 0:
-#                     missing_nutrients.remove(nutrient_name)
-#     return len(missing_nutrients) == 0
-
-
-def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake):
-    # get food information for foods found in optimized foods
+def test_nutrient_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake):
+  
     food_information = []
     for possible_food in possible_foods:
         food_name = possible_food["food_name"]
@@ -61,17 +42,12 @@ def test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, r
     if nutrient_amounts_met:
         print("all nutrient amounts are met!")
         
-
 # gets total summed amount given quantity of food in opt amount and adds it to summed_amount in user diet
 def get_total_amount(food_name, food_quantity, nutrient_value):
     iron_multiplier = 1.8 if food_name == "Iron, Fe" else 1
     return (food_quantity/ 100) * nutrient_value * iron_multiplier
 
 def test_dietary_restrictions(dietary_preferences,possible_foods):
-    """
-    Checks whether allergens/dietary restrictions were taken into consideration
-
-    """
 
     user_vegan = dietary_preferences["is_vegan"]
     user_vegetarian = dietary_preferences["is_vegetarian"]
@@ -81,7 +57,6 @@ def test_dietary_restrictions(dietary_preferences,possible_foods):
         food_vegan = food["is_vegan"]
         food_vegetarian = food["is_vegetarian"]
         food_name = food["food_name"]
-        # food_allergen = food["allergens"][allergy]
         if user_vegan:
             if not food_vegan:
                 print(f"{food_name} isn't vegan")
@@ -96,14 +71,9 @@ def test_dietary_restrictions(dietary_preferences,possible_foods):
 
 def test_symptoms(list_of_symptoms, possible_foods):
         df = pd.read_pickle("data/symptoms.pk1")
-
-        # use the isin() method to create a boolean mask
         mask = df.isin(list_of_symptoms).any(axis=1)
-
-        # use the boolean mask to remove rows that don't contain those symptoms
         df = df[mask]
 
-        # add food names to a set
         food_names = set()
         for food in possible_foods:
             food_name = food["food_name"]
@@ -186,8 +156,9 @@ def main():
         opt_model = OptModel()
         optimized_foods = opt_model.optimize_food_suggestions(rec_nutrient_intake, summed_nutrient_amounts, possible_foods)
         print("optimized foods: ", optimized_foods)
-        return test_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
+        return test_nutrient_correctness(optimized_foods, possible_foods, summed_nutrient_amounts, rec_nutrient_intake)
     else:
         print("no possible foods")
 
-main()
+if __name__ == "__main__":
+    main()

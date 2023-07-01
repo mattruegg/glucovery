@@ -1,12 +1,10 @@
 import pymongo
-import time
-import os
 import pandas as pd
 
 from opt_model import OptModel
 from reccommended_intake import RecommendedNutrientIntake
 
-connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
+connection_string = "INSERT CONNECTION STRING"
 client = pymongo.MongoClient(connection_string)
 db = client["glucovery-db"]
 collection = db["glucovery-collection"]
@@ -17,8 +15,6 @@ class NutrientCalculations:
         this.important_nutrients = {'Iron, Fe', 'Folate, naturally occurring', 'Vitamin B-6', 'Vitamin B-12', 'Vitamin D', 'Copper, Cu', 'Zinc, Zn', 'Calcium, Ca', 'Magnesium, Mg', 'Retinol activity equivalents, RAE', 'Tocopherol, alpha', 'Vitamin K', 'Potassium, K', 'Phosphorus, P', 'Sodium, Na', 'Manganese, Mn', 'Selenium, Se', 'Protein', 'Carbohydrate', 'Fibre, total dietary'}
         this.search_index_name ="default1"
 
-    # note: no sorting on score capability with fuzzy match
-    # TODO - can we easily flag an incoming food as unsafe (allergies, contains gluten)
     def search_food_name(this, search_query):
         """
         returns the food name for matching food searches
@@ -28,8 +24,6 @@ class NutrientCalculations:
         return: list of dictionaries. each dictionary contains food name.
 
         """
-    # pipeline - for each space seperated term, matches any substring with 1 character variation
-    # autocomplete searches substrings as opposed to the whole word
 
         projection = {"_id": 0, "food_name": 1}
 
@@ -54,8 +48,6 @@ class NutrientCalculations:
 
         return res
 
-
-     # TODO create index on food name
     def find_foods(this, foods):
         """
         foods: name of food and quantity that user selects
@@ -280,28 +272,3 @@ def get_food_recs(foods_user_ate, list_of_symptoms, dietary_preferences, allerge
         return optimized_foods
     else:
         return -3
-
-
-# testing purposes
-# foods = {"Fuji Apple": 0, "Gala Apple": 2, "Lime": 2, "Cranberry": 3, "Poached Egg": 5, 
-#                     "Cup of 2% White Milk": 2, "Tomato": 5,"Peanut Butter, Natural": 10 }
-# list_of_symptoms = []
-# dietary_preferences = {"is_vegan": False, "is_vegetarian": False}
-# allergens = {"Eggs": False, "Milk": False, "Peanuts": False, "Mustard": False, "Crustaceans and molluscs": False,
-#             "Fish": False, "Sesame seeds": False, "Soy": False, "Sulphites": False, "Tree Nuts": False, "Wheat and triticale": False
-#             }
-
-
-# food_recs = get_food_recs(foods, list_of_symptoms, dietary_preferences, allergens)
-# print(food_recs)
-
-# appendix
-# summed_nutrient_amounts = {"Protein": 56, "Iron, Fe": 20, "Folate, naturally occurring": 400,
-#                             'Vitamin B-6': 1.3, 'Vitamin B-12': 2.4, 'Vitamin D': 15,'Copper, Cu': 0.9, 
-#                             'Zinc, Zn':11,'Calcium, Ca': 1000, 'Magnesium, Mg': 400,
-#                             'Retinol activity equivalents, RAE': 900, 'Tocopherol, alpha': 15,
-#                             'Vitamin K': 120, 'Potassium, K': 4700, 'Phosphorus, P': 700, 
-#                             'Sodium, Na': 1500, 'Manganese, Mn': 2.3, 'Selenium, Se':55, 'Carbohydrate': 130, 
-#                             'Fibre, total dietary': 38}
-#     missing_nutrients_list = ['Abdonimal Pain', 'Fatigue', 'Diarrhea', 'Constiaption', 'Vomitting', 'Nausea', 'Brain Fog/Mood Swing', 'Numbness', 'Skin Issues', 'Headache/Migraine', 'Joint Pain', 
-# #  'Inflammation', 'Bloating', 'Bowel movements that are oily and float', 'Low Appetite ', 'Bad Gas', 'Lactose Sensitivity']

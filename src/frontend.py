@@ -1,7 +1,6 @@
 import flet as ft
-import math
-from mongo_db_queries import NutrientCalculations
-import mongo_db_queries as mdq
+from food_queries import NutrientCalculations
+import food_queries as mdq
 
 
 async def main(page: ft.Page):
