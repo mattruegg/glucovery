@@ -4,7 +4,7 @@ import pymongo
 from pymongo import MongoClient, InsertOne
 import os
 
-connection_string = "mongodb+srv://ckalia:ymck-glucovery@cluster0.siiuxrk.mongodb.net/?retryWrites=true&w=majority"
+connection_string = "INSERT CONNECTION STRING"
 client = pymongo.MongoClient(connection_string)
 db = client["glucovery-db"]
 collection = db["glucovery-collection"]
